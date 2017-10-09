@@ -7,10 +7,10 @@ segment .bss
 	_z resd 1
 segment .text
 	global main
-	extern scan_int, print_int, scan_float, print_float,
-scan_boolean, print_boolean
-extern print_endofline, print_blank, print_string
-extern alfa_malloc, alfa_free, ld_float
+	extern scan_int, print_int, scan_float, print_float
+	extern scan_boolean, print_boolean
+	extern print_endofline, print_blank, print_string
+	extern alfa_malloc, alfa_free, ld_float
 	
 main:
 	mov dword [__esp], esp

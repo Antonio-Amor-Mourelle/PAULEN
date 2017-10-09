@@ -47,10 +47,10 @@ void escribir_segmento_codigo(FILE* fpasm) {
      */
     fprintf(fpasm, "segment .text\n");
     fprintf(fpasm, "\tglobal main\n");
-    fprintf(fpasm, "\textern scan_int, print_int, scan_float, print_float,\n");
-    fprintf(fpasm, "scan_boolean, print_boolean\n");
-    fprintf(fpasm, "extern print_endofline, print_blank, print_string\n");
-    fprintf(fpasm, "extern alfa_malloc, alfa_free, ld_float\n\t");
+    fprintf(fpasm, "\textern scan_int, print_int, scan_float, print_float\n");
+    fprintf(fpasm, "\textern scan_boolean, print_boolean\n");
+    fprintf(fpasm, "\textern print_endofline, print_blank, print_string\n");
+    fprintf(fpasm, "\textern alfa_malloc, alfa_free, ld_float\n\t");
 
 }
 
