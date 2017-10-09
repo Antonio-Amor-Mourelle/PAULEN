@@ -25,7 +25,7 @@ main:
 _uno_0:   push dword 1
 _fin_negar_0:
 	call print_boolean
-	print_endofline
+	call print_endofline
 	push dword  _b1 
 	pop eax
 	 mov eax, [eax]
@@ -43,7 +43,7 @@ _fin_negar_1:
 _uno_2:   push dword 1
 _fin_negar_2:
 	call print_boolean
-	print_endofline
+	call print_endofline
 	mov dword esp, [__esp]
 	ret
 gestion_error_div_cero:

@@ -216,7 +216,7 @@ void escribir(FILE * fpasm, int es_referencia, int tipo) {
     if (es_referencia)
         fprintf(fpasm, "\tadd esp, 4\n");
     
-    fprintf(fpasm, "\tprint_endofline\n");
+    fprintf(fpasm, "\tcall print_endofline\n");
 
 }
 
