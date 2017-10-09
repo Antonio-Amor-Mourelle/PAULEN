@@ -208,13 +208,18 @@ void escribir(FILE * fpasm, int es_referencia, int tipo) {
     O ENTERO )
      */
 
+    fprintf(fpasm, "\tpop eax\n");
     if (es_referencia)
-        fprintf(fpasm, "\tpop eax\n\tpush dword [eax]\n");
+        fprintf(fpasm, "\tmov eax, [eax]\n");
+    
+    fprintf(fpasm, "\tpush dword eax\n");
 
-    fprintf(fpasm, "\tcall print_%s\n", tipo == ENTERO ? "int" : "boolean");
+    if(tipo == ENTERO)
+        fprintf(fpasm, "\tcall print_int\n");
+    else
+        fprintf(fpasm, "\tcall print_boolean\n");
 
-    if (es_referencia)
-        fprintf(fpasm, "\tadd esp, 4\n");
+    fprintf(fpasm, "\tadd esp, 4\n");
     
     fprintf(fpasm, "\tcall print_endofline\n");
 

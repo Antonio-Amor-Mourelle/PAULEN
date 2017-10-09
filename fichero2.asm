@@ -24,7 +24,10 @@ main:
 	jmp _fin_negar_0
 _uno_0:   push dword 1
 _fin_negar_0:
+	pop eax
+	push dword eax
 	call print_boolean
+	add esp, 4
 	call print_endofline
 	push dword  _b1 
 	pop eax
@@ -42,7 +45,10 @@ _fin_negar_1:
 	jmp _fin_negar_2
 _uno_2:   push dword 1
 _fin_negar_2:
+	pop eax
+	push dword eax
 	call print_boolean
+	add esp, 4
 	call print_endofline
 	mov dword esp, [__esp]
 	ret

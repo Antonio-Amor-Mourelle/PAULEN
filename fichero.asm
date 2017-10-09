@@ -32,10 +32,11 @@ main:
 	mov [_z], eax
 	push dword  _z 
 	pop eax
-	push dword [eax]
+	mov eax, [eax]
+	push dword eax
 	call print_int
 	add esp, 4
-	print_endofline
+	call print_endofline
 	mov dword esp, [__esp]
 	ret
 gestion_error_div_cero:
