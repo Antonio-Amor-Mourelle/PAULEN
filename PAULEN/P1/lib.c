@@ -77,7 +77,7 @@ void escribir_fin(FILE* fpasm) {
     fprintf(fpasm, "\tmov dword esp, [__esp]\n");
     fprintf(fpasm, "\tret\n");
     fprintf(fpasm, "gestion_error_div_cero:\n");
-    fprintf(fpasm, "\tpush dw msg_error_division\n");
+    fprintf(fpasm, "\tpush dword msg_error_division\n");
     fprintf(fpasm, "\tcall print_string\n");
     fprintf(fpasm, "\tadd esp, 4\n");
     fprintf(fpasm, "\tcall print_endofline\n");

@@ -38,7 +38,7 @@ main:
 	mov dword esp, [__esp]
 	ret
 gestion_error_div_cero:
-	push dw msg_error_division
+	push dword msg_error_division
 	call print_string
 	add esp, 4
 	call print_endofline
