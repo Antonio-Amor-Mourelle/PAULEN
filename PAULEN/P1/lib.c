@@ -14,7 +14,7 @@ void escribir_subseccion_data(FILE* fpasm) {
             VARIABLES AUXILIARES NECESARIAS EN EL COMPILADOR QUE DEBAN TENER UN VALOR CONCRETO */
     /* Variables auxiliares para mensajes de errores en tiempo de ejecución */
     fprintf(fpasm, "segment .data\n");
-    fprintf(fpasm, "msg_divisionByZero db \"ERROR: DIVISON BY ZERO\", 0\n");
+    fprintf(fpasm, "msg_error_division db \"ERROR: DIVISON BY ZERO\", 0\n");
 }
 
 /**********************************************************************************/

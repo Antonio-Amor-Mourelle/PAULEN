@@ -1,5 +1,5 @@
 segment .data
-msg_divisionByZero db "ERROR: DIVISON BY ZERO", 0
+msg_error_division db "ERROR: DIVISON BY ZERO", 0
 segment .bss
 	__esp resd 1
 	_x resd 1
