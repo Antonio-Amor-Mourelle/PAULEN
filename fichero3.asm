@@ -43,6 +43,7 @@ _fin_negar_0:
 	pop dword eax
 	mov eax, [eax]
 	neg eax
+	push dword eax
 	pop dword eax
 	mov [_j], eax
 	push dword  _j 

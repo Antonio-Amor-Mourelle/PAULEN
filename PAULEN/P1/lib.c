@@ -145,6 +145,7 @@ void cambiar_signo(FILE * fpasm, int es_referencia) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
 
     fprintf(fpasm, "\tneg eax\n");
+    fprintf(fpasm, "\tpush dword eax\n");
 
 }
 
