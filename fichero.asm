@@ -35,6 +35,7 @@ main:
 	push dword [eax]
 	call print_int
 	add esp, 4
+	print_endofline
 	mov dword esp, [__esp]
 	ret
 gestion_error_div_cero:

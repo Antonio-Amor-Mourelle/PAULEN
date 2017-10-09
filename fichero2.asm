@@ -1,14 +1,14 @@
 segment .data
-msg_divisionByZero db "ERROR: DIVISON BY ZERO", 0
+msg_error_division db "ERROR: DIVISON BY ZERO", 0
 segment .bss
 	__esp resd 1
 	_b1 resd 1
 segment .text
 	global main
-	extern scan_int, print_int, scan_float, print_float,
-scan_boolean, print_boolean
-extern print_endofline, print_blank, print_string
-extern alfa_malloc, alfa_free, ld_float
+	extern scan_int, print_int, scan_float, print_float
+	extern scan_boolean, print_boolean
+	extern print_endofline, print_blank, print_string
+	extern alfa_malloc, alfa_free, ld_float
 	
 main:
 	mov dword [__esp], esp
@@ -25,6 +25,7 @@ main:
 _uno_0:   push dword 1
 _fin_negar_0:
 	call print_boolean
+	print_endofline
 	push dword  _b1 
 	pop eax
 	 mov eax, [eax]
@@ -42,10 +43,11 @@ _fin_negar_1:
 _uno_2:   push dword 1
 _fin_negar_2:
 	call print_boolean
+	print_endofline
 	mov dword esp, [__esp]
 	ret
 gestion_error_div_cero:
-	push dw msg_error_division
+	push dword msg_error_division
 	call print_string
 	add esp, 4
 	call print_endofline
