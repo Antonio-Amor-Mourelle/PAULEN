@@ -104,7 +104,7 @@ STATUS declarar_funcion(const char *lexema, CATEGORIA categ, TIPO tipo,
             adic1, adic2);
 }
 
-STATUS fin_funcion(const char *lexema){
+STATUS fin_funcion(){
     if(!tabla || !tabla->local)
         return ERR;
 

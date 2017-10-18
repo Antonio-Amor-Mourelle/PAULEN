@@ -1,9 +1,12 @@
+#include <string.h>
 #include "tablaSimbolos.h"
 
 int main(int argc, char **argv) {
-    FILE *in, *out;
+    FILE *in = NULL, *out = NULL;
+    INFO_SIMBOLO *res = NULL;
+    STATUS retorno;
     char id[64];
-    int val;
+    int val = -1;
 
     tabla = crear_tabla_simbolos();
     if (!tabla) {
@@ -23,17 +26,48 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    while (fscanf(in, "%s\t%d\n", id, val) >= 0) {
+    while (fscanf(in, "%s\t%d\n", id, &val) >= 0) {
         if (val >= 0) {
             /*Caso se inserta un simbolo*/
             if (tabla->local)
                 /*Se inserta el simbolo en el ambito local*/
-                declarar_local(id, VARIABLE, 0, 0, val, 0);
+                retorno = declarar_local(id, VARIABLE, 0, 0, val, 0);
             else
-                declarar_global(id, VARIABLE, 0, 0, val, 0);
-        } else if (val < -1){
-            /**/
+                retorno = declarar_global(id, VARIABLE, 0, 0, val, 0);
+
+            if (retorno == OK)
+                fprintf(out, "%s\n", id);
+            else
+                fprintf(out, "-1\t%s\n", id);
+            
+        } else if (strcmp("cierre", id) == 0 && val == -999) {
+            /*Se cierra un ambito*/
+            if (fin_funcion() == OK)
+                fprintf(out, "cierre\n");
+        } else if (val < -1) {
+            /*Se crea un nuevo ambito*/
+            if (declarar_funcion(id, FUNCION, 0, 0, val, 0) == OK)
+                fprintf(out, "%s\n", id);
+            else 
+                fprintf(out, "-1\t%s\n", id);
+        } else {
+            /*Buscamos el simbolo*/
+            if (tabla->local) {
+                /*Miramos si hay ambito local abierto*/
+                res = uso_local(id);
+            } else {
+                /*Miramos el ambito local*/
+                res = uso_global(id);
+            }
+            if (!res)
+                fprintf(out, "%s\t-1\n", id);
+            else {
+                fprintf(out, "%s\t%d\n", id, res->adicional1);
+            }
+
         }
+
+        val = -1;
     }
 
 

@@ -1,0 +1,10 @@
+tres
+tres	3
+cuatro	-1
+antonio
+cuatro
+-1	esther
+antonio	-4
+cuatro	4
+cierre
+cuatro	-1

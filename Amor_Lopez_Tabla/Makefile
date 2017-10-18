@@ -5,7 +5,7 @@ CFLAGS = -ansi -pedantic
 all: tabla_simbolos
 
 tabla_simbolos: main.o tablaSimbolos.o tablaHash.o
-	$(CC) -o $^
+	gcc -o $@ $^
 
 main.o: main.c tablaSimbolos.h
 	$(CC) -c main.c
