@@ -19,6 +19,8 @@ TablaSimbolos * crear_tabla_simbolos() {
         return NULL;
     }
     
+    tabla->local = NULL;
+    
     return tabla;
 }
 
@@ -64,6 +66,8 @@ STATUS fin_funcion(const char *lexema){
         return ERR;
     
     liberar_tabla(tabla->local);
+    
+    tabla->local = NULL;
     
     
     return OK;

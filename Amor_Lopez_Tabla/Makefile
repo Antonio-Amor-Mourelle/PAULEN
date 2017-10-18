@@ -4,9 +4,11 @@ CFLAGS = -ansi -pedantic
 
 all: tabla_simbolos
 
-tabla_simbolos: tablaSimbolos.o tablaHash.o
+tabla_simbolos: main.o tablaSimbolos.o tablaHash.o
 	$(CC) -o $^
-	mv tablaSimbolos.o $@.o
+
+main.o: main.c tablaSimbolos.h
+	$(CC) -c main.c
 
 tablaHash.o: tablaHash.c tablaHash.h
 	$(CC) -c tablaHash.c $(CFLAGS)
