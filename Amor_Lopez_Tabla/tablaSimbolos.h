@@ -21,6 +21,7 @@ INFO_SIMBOLO * uso_local(const char *lexema);
 STATUS declarar_funcion(const char *lexema, CATEGORIA categ, TIPO tipo, 
         CLASE clase, int adic1, int adic2);
 STATUS fin_funcion();
+void destruir_tabla_simbolos();
 
 #endif /* TABLASIMBOLOS_H */
 

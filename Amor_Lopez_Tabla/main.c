@@ -8,21 +8,27 @@ int main(int argc, char **argv) {
     char id[64];
     int val = -1;
 
+    if (argc < 3) {
+        fprintf(stderr, "Error en los parametros de entrada\n");
+        return -1;
+    }
+
     tabla = crear_tabla_simbolos();
     if (!tabla) {
         fprintf(stderr, "Error creando la tabla de simbolos.\n");
         return -1;
     }
 
-    in = fopen("entrada.txt", "r");
+    in = fopen(argv[1], "r");
     if (!in) {
         fprintf(stderr, "Error abriendo fichero de entrada.\n");
         return -1;
     }
 
-    out = fopen("salida.txt", "w");
+    out = fopen(argv[2], "w");
     if (!out) {
         fprintf(stderr, "Error abriendo fichero de salida.\n");
+        fclose(in);
         return -1;
     }
 
@@ -39,7 +45,7 @@ int main(int argc, char **argv) {
                 fprintf(out, "%s\n", id);
             else
                 fprintf(out, "-1\t%s\n", id);
-            
+
         } else if (strcmp("cierre", id) == 0 && val == -999) {
             /*Se cierra un ambito*/
             if (fin_funcion() == OK)
@@ -48,7 +54,7 @@ int main(int argc, char **argv) {
             /*Se crea un nuevo ambito*/
             if (declarar_funcion(id, FUNCION, 0, 0, val, 0) == OK)
                 fprintf(out, "%s\n", id);
-            else 
+            else
                 fprintf(out, "-1\t%s\n", id);
         } else {
             /*Buscamos el simbolo*/
@@ -69,6 +75,11 @@ int main(int argc, char **argv) {
 
         val = -1;
     }
-
+    
+    destruir_tabla_simbolos(tabla);
+    
+    fclose(in);
+    fclose(out);
+    return 0;
 
 }

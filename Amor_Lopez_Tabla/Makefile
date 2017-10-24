@@ -1,10 +1,8 @@
 CC = gcc -c -Wall
-CFLAGS = -ansi -pedantic 
 
+all: prueba_tabla
 
-all: tabla_simbolos
-
-tabla_simbolos: main.o tablaSimbolos.o tablaHash.o
+prueba_tabla: main.o tablaSimbolos.o tablaHash.o
 	gcc -o $@ $^
 
 main.o: main.c tablaSimbolos.h
@@ -18,4 +16,4 @@ tablaSimbolos.o: tablaSimbolos.c tablaSimbolos.h tablaHash.h
 
 .PHONY: clean
 clean:
-	rm -f *.o
+	rm -f *.o prueba_tabla

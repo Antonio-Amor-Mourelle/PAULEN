@@ -115,3 +115,16 @@ STATUS fin_funcion(){
     
     return OK;
 }
+
+void destruir_tabla_simbolos(){
+    if(!tabla) return;
+    
+    if(tabla->global)
+        liberar_tabla(tabla->global);
+    
+    if(tabla->local)
+        liberar_tabla(tabla->local);
+    
+    free(tabla);
+    
+}
