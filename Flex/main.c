@@ -64,6 +64,9 @@ int main(int argc, char **argv){
 			case TOK_PRINTF:
 				fprintf(out,"TOK_PRINTF\t%d\t%s\n",var, yytext);
 				break;
+			case TOK_RETURN:
+				fprintf(out,"TOK_RETURN\t%d\t%s\n",var, yytext);
+				break;
 			case TOK_PUNTOYCOMA:
 				fprintf(out,"TOK_PUNTOYCOMA\t%d\t%s\n",var, yytext);
 				break;
@@ -142,11 +145,18 @@ int main(int argc, char **argv){
 			case TOK_FALSE:
 				fprintf(out,"TOK_FALSE\t%d\t%s\n",var, yytext);
 				break;
-			default:
-				fprintf(stderr, "****Error en [lin %d, col %d]:\n", fila, columna);
+			case TOK_ERROR:
+				fprintf(stderr, "****Error en [lin %d, col %d]: simbolo no permitido (%s)\n", fila, columna, yytext);
 				fclose(yyin);
 				fclose(out);
 				return -1;
+			case TOK_ERRORLONGITUD:
+				fprintf(stderr, "****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", fila, columna, yytext);
+				fclose(yyin);
+				fclose(out);
+				return -1;
+			default:
+				break;
 		}
 	}while(var);
 	fclose(yyin);

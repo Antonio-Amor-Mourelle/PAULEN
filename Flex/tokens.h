@@ -56,5 +56,6 @@ Descripción: Definición de tokens para el lenguaje ALFA
 
 /* Errores */
 #define TOK_ERROR                -1
+#define TOK_ERRORLONGITUD        -2
 
 #endif

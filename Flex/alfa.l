@@ -49,6 +49,6 @@ printf {columna+=yyleng; return TOK_PRINTF;}
 \n {fila++; columna=1;}
 [ \t] {columna++;}
 [0-9]([0-9])* {columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
-[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100) return TOK_ERROR; columna+=yyleng; return TOK_IDENTIFICADOR;}
+[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100) return TOK_ERRORLONGITUD; columna+=yyleng; return TOK_IDENTIFICADOR;}
 . {return TOK_ERROR;}
 %%
