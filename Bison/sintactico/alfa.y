@@ -73,16 +73,9 @@ void yyerror(char *s){
 <constante_logica> : TOK_TRUE
                    | TOK_FALSE
 <constante_entera>: <numero>
-<numero> : <digito>
-         | <numero> <digito>
+<numero> : TOK_CONSTANTE_ENTERA
 
-<identificador> : <letra>
-                | <letra> <cola_identificador>
-<cola_identificador> : <alfanumerico>
-                     | <alfanumerico> <cola_identificador>
-
-<alfanumerico> : <letra>
-               | <digito>
+<identificador> :TOK_IDENTIFICADOR
 
 
 %%
