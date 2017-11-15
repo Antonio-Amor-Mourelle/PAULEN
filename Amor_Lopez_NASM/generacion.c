@@ -291,7 +291,7 @@ void dividir(FILE * fpasm, int es_referencia_1, int es_referencia_2) {
     /* Aqui habria que comprobar que ebx o [ebx] no es 0 y saltar
    donde corresponda si lo es */
     fprintf(fpasm, "\tcmp ebx, 0\n");
-    fprintf(fpasm, "\tje fin_error_division\n");
+    fprintf(fpasm, "\tje msg_error_division\n");
 
     fprintf(fpasm, "\tidiv ebx\n");
 

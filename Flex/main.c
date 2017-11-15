@@ -128,10 +128,10 @@ int main(int argc, char **argv){
 				fprintf(out,"TOK_MAYORIGUAL\t%d\t%s\n",var, yytext);
 				break;
 			case TOK_MENOR:
-				fprintf(out,"TOK_MENORIGUAL\t%d\t%s\n",var, yytext);
+				fprintf(out,"TOK_MENOR\t%d\t%s\n",var, yytext);
 				break;
 			case TOK_MAYOR:
-				fprintf(out,"TOK_MAYORIGUAL\t%d\t%s\n",var, yytext);
+				fprintf(out,"TOK_MAYOR\t%d\t%s\n",var, yytext);
 				break;
 			case TOK_IDENTIFICADOR:
 				fprintf(out,"TOK_IDENTIFICADOR\t%d\t%s\n",var, yytext);
