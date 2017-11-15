@@ -2,6 +2,7 @@
 #include "y.tab.h"
 #include <stdlib.h>
 #include <stdio.h>
+
 #define TOK_ERROR -1
 int error_morfologico = 0;
 int error_longitud = 0;
@@ -41,8 +42,8 @@ printf {columna+=yyleng; return TOK_PRINTF;}
 "||" {columna+=2; return TOK_OR;}
 "==" {columna+=2; return TOK_IGUAL;}
 "!=" {columna+=2; return TOK_DISTINTO;}
-"!" {columna++; return TOK_NOT;}
-"," {columna++; return TOK_COMA;}
+"!" {columna++; return yytext[0];}
+"," {columna++; return yytext[0];}
 "<=" {columna+=2; return TOK_MENORIGUAL;}
 ">=" {columna+=2; return TOK_MAYORIGUAL;}
 "<" {columna++; return yytext[0];}
@@ -51,6 +52,6 @@ printf {columna+=yyleng; return TOK_PRINTF;}
 \n {fila++; columna=1;}
 [ \t] {columna++;}
 ([0-9])+ {columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
-[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){error_longitud = 1; return TOK_ERRORLONGITUD;} columna+=yyleng; return TOK_IDENTIFICADOR;}
+[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){error_longitud = 1; return TOK_ERROR;} columna+=yyleng; return TOK_IDENTIFICADOR;}
 . {error_morfologico = 1; return TOK_ERROR;}
 %%
