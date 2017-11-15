@@ -12,7 +12,8 @@ void yyerror(char *s){
 
 %}
 
-%token 
+%token TOK_IDENTIFICADOR
+%token TOK_CONSTANTE_ENTERA
 
 %left '+' '-'
 %left '*' '/'

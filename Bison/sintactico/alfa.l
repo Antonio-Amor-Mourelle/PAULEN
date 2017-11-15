@@ -2,7 +2,9 @@
 #include "y.tab.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#define TOK_ERROR -1
+int error_morfologico = 0;
+int error_longitud = 0;
 int fila=1, columna=1;
 %}
 
@@ -10,45 +12,45 @@ int fila=1, columna=1;
 
 %%
 
-main {columna+=yyleng; return TOK_MAIN;}
-array columna+=yyleng; {return TOK_ARRAY;}
-int {columna+=yyleng; return TOK_INT;}
-boolean {columna+=yyleng; return TOK_BOOLEAN;}
-function {columna+=yyleng; return TOK_FUNCTION;}
-if {columna+=yyleng; return TOK_IF;}
-else {columna+=yyleng; return TOK_ELSE;}
-while {columna+=yyleng; return TOK_WHILE;}
-"true" {columna+=yyleng; return TOK_TRUE;}
-"false" {columna+=yyleng; return TOK_FALSE;}
-scanf {columna+=yyleng; return TOK_SCANF;}
-printf {columna+=yyleng; return TOK_PRINTF;}
-"return" {columna+=yyleng; return TOK_RETURN;}
-";" {columna++; return TOK_PUNTOYCOMA;}
-"(" {columna++; return TOK_PARENTESISIZQUIERDO;}
-")" {columna++; return TOK_PARENTESISDERECHO;}
-"[" {columna++; return TOK_CORCHETEIZQUIERDO;}
-"]" {columna++; return TOK_CORCHETEDERECHO;}
-"{" {columna++; return TOK_LLAVEIZQUIERDA;}
-"}" {columna++; return TOK_LLAVEDERECHA;}
-"=" {columna++; return TOK_ASIGNACION;}
-"*" {columna++; return TOK_ASTERISCO;}
-"+" {columna++; return TOK_MAS;}
-"-" {columna++; return TOK_MENOS;}
-"/" {columna++; return TOK_DIVISION;}
-"&&" {columna+=2;return TOK_AND;}
-"||" {columna+=2; return TOK_OR;}
-"==" {columna+=2; return TOK_IGUAL;}
-"!=" {columna+=2; return TOK_DISTINTO;}
-"!" {columna++; return TOK_NOT;}
-"," {columna++; return TOK_COMA;}
-"<=" {columna+=2; return TOK_MENORIGUAL;}
-">=" {columna+=2; return TOK_MAYORIGUAL;}
-"<" {columna++; return TOK_MENOR;}
-">" {columna++; return TOK_MAYOR;}
+main {columna+=yyleng; return yytext;}
+array columna+=yyleng; {return yytext;}
+int {columna+=yyleng; return yytext;}
+boolean {columna+=yyleng; return yytext;}
+function {columna+=yyleng; return yytext;}
+if {columna+=yyleng; return yytext;}
+else {columna+=yyleng; return yytext;}
+while {columna+=yyleng; return yytext;}
+"true" {columna+=yyleng; return yytext;}
+"false" {columna+=yyleng; return yytext;}
+scanf {columna+=yyleng; return yytext;}
+printf {columna+=yyleng; return yytext;}
+"return" {columna+=yyleng; return yytext;}
+";" {columna++; return yytext[0];}
+"(" {columna++; return yytext[0];}
+")" {columna++; return yytext[0];}
+"[" {columna++; return yytext[0];}
+"]" {columna++; return yytext[0];}
+"{" {columna++; return yytext[0];}
+"}" {columna++; return yytext[0];}
+"=" {columna++; return yytext[0];}
+"*" {columna++; return yytext[0];}
+"+" {columna++; return yytext[0];}
+"-" {columna++; return yytext[0];}
+"/" {columna++; return yytext[0];}
+"&&" {columna+=2;return yytext;}
+"||" {columna+=2; return yytext;}
+"==" {columna+=2; return yytext;}
+"!=" {columna+=2; return yytext;}
+"!" {columna++; return yytext[0];}
+"," {columna++; return yytext[0];}
+"<=" {columna+=2; return yytext;}
+">=" {columna+=2; return yytext;}
+"<" {columna++; return yytext[0];}
+">" {columna++; return yytext[0];}
 "//".*\n {fila++; columna=1;}
 \n {fila++; columna=1;}
 [ \t] {columna++;}
-[0-9]([0-9])* {columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
-[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100) return TOK_ERRORLONGITUD; columna+=yyleng; return TOK_IDENTIFICADOR;}
-. {return TOK_ERROR;}
+([0-9])+ {columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
+[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){error_longitud = 1; return TOK_ERRORLONGITUD;} columna+=yyleng; return TOK_IDENTIFICADOR;}
+. {error_morfologico = 1; return TOK_ERROR;}
 %%
