@@ -54,11 +54,11 @@ printf {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_PRINTF;}
 ([0-9])+ {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
 [A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){
 				error_morfologico = 1; 
-				fprintf(stderr, "****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", fila, columna, yytext); 
+				fprintf(stderr, "\t****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", fila, columna, yytext); 
 				return TOK_ERROR;
 			} 
 			fprintf(out, ";D:\t%s\n", yytext); 
 			columna+=yyleng; 
 			return TOK_IDENTIFICADOR;}
-. {error_morfologico = 1; fprintf(stderr, "****Error en [lin %d, col %d]: simbolo no permitido (%s)\n", fila, columna, yytext); return TOK_ERROR;}
+. {error_morfologico = 1; fprintf(stderr, "\t****Error en [lin %d, col %d]: simbolo no permitido (%s)\n", fila, columna, yytext); return TOK_ERROR;}
 %%

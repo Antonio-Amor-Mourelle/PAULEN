@@ -3,10 +3,15 @@
 #include <stdio.h>
 extern int yylex();
 extern char* yytext;
+extern int yyleng;
 extern FILE* out;
 extern int error_morfologico;
+extern int fila;
+extern int columna;
 
 void yyerror(char *s){
+	if(!error_morfologico) 
+		fprintf(stderr, "\t****Error sintactico en [lin %d, col %d]\n", fila, columna-yyleng);
 }
 
 
