@@ -46,7 +46,7 @@ void yyerror(char *s){
 programa : TOK_MAIN '{' declaraciones funciones sentencias '}'  {fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
 declaraciones : declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}
                 | declaracion declaraciones {fprintf(out, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
-declaracion : clase identificadores ';' {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores>\n");}
+declaracion : clase identificadores ';' {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");}
 clase : clase_escalar {fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
         | clase_vector {fprintf(out, ";R7:\t<clase> ::= <clase_vector>\n");}
 clase_escalar : tipo {fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");}
@@ -92,7 +92,7 @@ exp : exp '+' exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
       | exp TOK_AND exp {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
       | exp TOK_OR exp {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
       | '!' exp {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
-      | identificador {fprintf(out, ";R80\t<exp> ::= <identificador>\n");}
+      | identificador {fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
       | constante {fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
       | '(' exp ')' {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
       | '(' comparacion ')' {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
