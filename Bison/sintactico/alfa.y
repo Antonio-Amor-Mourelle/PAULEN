@@ -99,23 +99,22 @@ exp : exp '+' exp {fprintf(out, ";R*:\t\n");}
       | '(' comparacion ')' {fprintf(out, ";R*:\t\n");}
       | elemento_vector {fprintf(out, ";R*:\t\n");}
       | identificador '(' lista_expresiones ')' {fprintf(out, ";R*:\t\n");}
-lista_expresiones : exp resto_lista_expresiones {fprintf(out, ";R*:\t\n");}
-                    | /**/ {fprintf(out, ";R*:\t\n");}
-resto_lista_expresiones : ',' exp resto_lista_expresiones {fprintf(out, ";R*:\t\n");}
-                          | /**/ {fprintf(out, ";R*:\t\n");}
-comparacion : exp TOK_IGUAL exp {fprintf(out, ";R*:\t\n");}
-              | exp TOK_DISTINTO exp {fprintf(out, ";R*:\t\n");}
-              | exp TOK_MENORIGUAL exp {fprintf(out, ";R*:\t\n");}
-              | exp TOK_MAYORIGUAL exp {fprintf(out, ";R*:\t\n");}
-              | exp '<' exp {fprintf(out, ";R*:\t\n");}
-              | exp '>' exp {fprintf(out, ";R*:\t\n");}
-constante : constante_logica {fprintf(out, ";R*:\t\n");}
-            | constante_entera {fprintf(out, ";R*:\t\n");}
-constante_logica : TOK_TRUE {fprintf(out, ";R*:\t\n");}
-                   | TOK_FALSE {fprintf(out, ";R*:\t\n");}
-constante_entera: numero {fprintf(out, ";R*:\t\n");}
-numero : TOK_CONSTANTE_ENTERA {fprintf(out, ";R*:\t\n");}
-identificador :TOK_IDENTIFICADOR {fprintf(out, ";R*:\t\n");}
+lista_expresiones : exp resto_lista_expresiones {fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
+                    | /**/ {fprintf(out, ";R90:\t<lista_expresiones> ::= \n");}
+resto_lista_expresiones : ',' exp resto_lista_expresiones {fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones> \n");}
+                          | /**/ {fprintf(out, ";R92:\t<resto_lista_expresiones> ::= \n");}
+comparacion : exp TOK_IGUAL exp {fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
+              | exp TOK_DISTINTO exp {fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
+              | exp TOK_MENORIGUAL exp {fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
+              | exp TOK_MAYORIGUAL exp {fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
+              | exp '<' exp {fprintf(out, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
+              | exp '>' exp {fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
+constante : constante_logica {fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
+            | constante_entera {fprintf(out, ";R100:\t<constante> ::= <constante_entera>\n");}
+constante_logica : TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n");}
+                   | TOK_FALSE {fprintf(out, ";R103:\t<constante_logica> ::= false\n");}
+constante_entera: TOK_CONSTANTE_ENTERA {fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
+identificador : TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
 
 
 %%
