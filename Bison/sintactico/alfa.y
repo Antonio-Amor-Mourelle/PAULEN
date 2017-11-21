@@ -62,24 +62,24 @@ parametros_funcion : parametro_funcion resto_parametros_funcion {fprintf(out, ";
                      | {fprintf(out, ";R24:\t<parametros_funcion> ::= \n");}
 resto_parametros_funcion : ';' parametro_funcion resto_parametros_funcion {fprintf(out, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n");}
                            | {fprintf(out, ";R26:\t<resto_parametros_funcion> ::= \n");}
-parametro_funcion : tipo identificador {fprintf(out, ";R*:\t\n");}
-declaraciones_funcion : declaraciones {fprintf(out, ";R*:\t\n");}
-                        | /**/ {fprintf(out, ";R*:\t\n");}
-sentencias : sentencia {fprintf(out, ";R*:\t\n");}
-             | sentencia sentencias {fprintf(out, ";R*:\t\n");}
-sentencia : sentencia_simple ';' {fprintf(out, ";R*:\t\n");}
-             | bloque {fprintf(out, ";R*:\t\n");}
-sentencia_simple : asignacion {fprintf(out, ";R*:\t\n");}
-                   | lectura {fprintf(out, ";R*:\t\n");}
-                   | escritura {fprintf(out, ";R*:\t\n");}
-                   | retorno_funcion {fprintf(out, ";R*:\t\n");}
-bloque : condicional {fprintf(out, ";R*:\t\n");}
-         | bucle {fprintf(out, ";R*:\t\n");}
-asignacion : identificador '=' exp {fprintf(out, ";R*:\t\n");}
-             | elemento_vector '=' exp {fprintf(out, ";R*:\t\n");}
-elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R*:\t\n");}
-condicional : TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(out, ";R*:\t\n");}
-              | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {fprintf(out, ";R*:\t\n");}
+parametro_funcion : tipo identificador {fprintf(out, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n");}
+declaraciones_funcion : declaraciones {fprintf(out, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n");}
+                        | /**/ {fprintf(out, ";R29:\t<declaraciones_funcion> ::= \n");}
+sentencias : sentencia {fprintf(out, ";R30:\t<sentencias> ::= <sentencia>\n");}
+             | sentencia sentencias {fprintf(out, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");}
+sentencia : sentencia_simple ';' {fprintf(out, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");}
+             | bloque {fprintf(out, ";R33:\t<sentencia> ::= <bloque>\n");}
+sentencia_simple : asignacion {fprintf(out, ";R34:\t<sentencia_simple> ::= <asignacion>\n");}
+                   | lectura {fprintf(out, ";R35:\t<sentencia_simple> ::= <lectura>\n");}
+                   | escritura {fprintf(out, ";R36:\t<sentencia_simple> ::= <escritura>\n");}
+                   | retorno_funcion {fprintf(out, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");}
+bloque : condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
+         | bucle {fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");}
+asignacion : identificador '=' exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
+             | elemento_vector '=' exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
+elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
+condicional : TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
+              | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
 /*hasta aqui esther*/
 bucle : TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(out, ";R*:\t\n");}
 lectura : TOK_SCANF identificador {fprintf(out, ";R*:\t\n");}
