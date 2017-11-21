@@ -80,6 +80,7 @@ asignacion : identificador '=' exp {}
 elemento_vector : identificador '[' exp ']'  {}
 condicional : TOK_IF '(' exp ')' '{' sentencias '}' {}
               | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {}
+/*hasta aqui esther*/
 bucle : TOK_WHILE '(' exp ')' '{' sentencias '}' {}
 lectura : TOK_SCANF identificador {}
 escritura : TOK_PRINTF exp {}

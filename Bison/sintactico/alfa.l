@@ -5,53 +5,60 @@
 
 #define TOK_ERROR -1
 int error_morfologico = 0;
-int error_longitud = 0;
 int fila=1, columna=1;
+extern FILE* out;
 %}
 
 %option noyywrap
 
 %%
 
-main {columna+=yyleng; return TOK_MAIN;}
-array columna+=yyleng; {return TOK_ARRAY;}
-int {columna+=yyleng; return TOK_INT;}
-boolean {columna+=yyleng; return TOK_BOOLEAN;}
-function {columna+=yyleng; return TOK_FUNCTION;}
-if {columna+=yyleng; return TOK_IF;}
-else {columna+=yyleng; return TOK_ELSE;}
-while {columna+=yyleng; return TOK_WHILE;}
-"true" {columna+=yyleng; return TOK_TRUE;}
-"false" {columna+=yyleng; return TOK_FALSE;}
-scanf {columna+=yyleng; return TOK_SCANF;}
-printf {columna+=yyleng; return TOK_PRINTF;}
-"return" {columna+=yyleng; return TOK_RETURN;}
-";" {columna++; return yytext[0];}
-"(" {columna++; return yytext[0];}
-")" {columna++; return yytext[0];}
-"[" {columna++; return yytext[0];}
-"]" {columna++; return yytext[0];}
-"{" {columna++; return yytext[0];}
-"}" {columna++; return yytext[0];}
-"=" {columna++; return yytext[0];}
-"*" {columna++; return yytext[0];}
-"+" {columna++; return yytext[0];}
-"-" {columna++; return yytext[0];}
-"/" {columna++; return yytext[0];}
-"&&" {columna+=2;return TOK_AND;}
-"||" {columna+=2; return TOK_OR;}
-"==" {columna+=2; return TOK_IGUAL;}
-"!=" {columna+=2; return TOK_DISTINTO;}
-"!" {columna++; return yytext[0];}
-"," {columna++; return yytext[0];}
-"<=" {columna+=2; return TOK_MENORIGUAL;}
-">=" {columna+=2; return TOK_MAYORIGUAL;}
-"<" {columna++; return yytext[0];}
-">" {columna++; return yytext[0];}
+main {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_MAIN;}
+array {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_ARRAY;}
+int {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_INT;}
+boolean {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_BOOLEAN;}
+function {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_FUNCTION;}
+if {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_IF;}
+else {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_ELSE;}
+while {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_WHILE;}
+"true" {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_TRUE;}
+"false" {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_FALSE;}
+scanf {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_SCANF;}
+printf {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_PRINTF;}
+"return" {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_RETURN;}
+";" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"(" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+")" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"[" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"]" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"{" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"}" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"=" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"*" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"+" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"-" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"/" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"&&" {fprintf(out, ";D:\t%s\n", yytext); columna+=2;return TOK_AND;}
+"||" {fprintf(out, ";D:\t%s\n", yytext); columna+=2; return TOK_OR;}
+"==" {fprintf(out, ";D:\t%s\n", yytext); columna+=2; return TOK_IGUAL;}
+"!=" {fprintf(out, ";D:\t%s\n", yytext); columna+=2; return TOK_DISTINTO;}
+"!" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"," {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+"<=" {fprintf(out, ";D:\t%s\n", yytext); columna+=2; return TOK_MENORIGUAL;}
+">=" {fprintf(out, ";D:\t%s\n", yytext); columna+=2; return TOK_MAYORIGUAL;}
+"<" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
+">" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
 "//".*\n {fila++; columna=1;}
 \n {fila++; columna=1;}
 [ \t] {columna++;}
-([0-9])+ {columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
-[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){error_longitud = 1; return TOK_ERROR;} columna+=yyleng; return TOK_IDENTIFICADOR;}
-. {error_morfologico = 1; return TOK_ERROR;}
+([0-9])+ {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
+[A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){
+				error_morfologico = 1; 
+				fprintf(stderr, "****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", fila, columna, yytext); 
+				return TOK_ERROR;
+			} 
+			fprintf(out, ";D:\t%s\n", yytext); 
+			columna+=yyleng; 
+			return TOK_IDENTIFICADOR;}
+. {error_morfologico = 1; fprintf(stderr, "****Error en [lin %d, col %d]: simbolo no permitido (%s)\n", fila, columna, yytext); return TOK_ERROR;}
 %%

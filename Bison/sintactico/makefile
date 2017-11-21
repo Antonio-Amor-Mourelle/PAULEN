@@ -6,8 +6,8 @@ lex.yy.c: alfa.l
 y.tab.c: alfa.y 
 	bison -ydv $^
 
-pruebaSintactico: lex.yy.c y.tab.c
+pruebaSintactico: main.c lex.yy.c y.tab.c
 	gcc -o $@ $^
 
 clean: 
-	rm -f lex.yy.c y.tab.c y.tab.h ruebaMorfo
+	rm -f lex.yy.c y.tab.c y.tab.h y.output pruebaSintactico
