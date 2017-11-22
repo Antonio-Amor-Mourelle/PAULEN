@@ -1,0 +1,9 @@
+1-Cambios en la gramática
+Para la semana que viene
+2-Guiandose en el pdf hacer el árbol del programa 
+	main {
+	    int x;
+	    x=8;
+	    printf x;
+	}
+ y programarlo con el compilador.
