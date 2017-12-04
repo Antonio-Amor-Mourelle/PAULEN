@@ -52,7 +52,7 @@ printf {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_PRINTF;}
 "//".*\n {fila++; columna=1;}
 \n {fila++; columna=1;}
 [ \t] {columna++;}
-([0-9])+ {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_CONSTANTE_ENTERA;}
+([0-9])+ {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; yylval.atributos.valor_entero=atoi(yytext); return TOK_CONSTANTE_ENTERA;}
 [A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){
 				error_morfologico = 1; 
 				fprintf(stderr, "\t****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n", fila, columna, yytext); 
@@ -60,6 +60,7 @@ printf {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_PRINTF;}
 			} 
 			fprintf(out, ";D:\t%s\n", yytext); 
 			columna+=yyleng; 
+			strcpy(yylval.atributos.lexema,yytext);
 			return TOK_IDENTIFICADOR;}
 . {error_morfologico = 1; fprintf(stderr, "\t****Error en [lin %d, col %d]: simbolo no permitido (%s)\n", fila, columna, yytext); return TOK_ERROR;}
 %%

@@ -24,8 +24,8 @@ TablaSimbolos * crear_tabla_simbolos() {
     return tabla;
 }
 
-STATUS declarar_global(const char *lexema, CATEGORIA categ, TIPO tipo,
-        CLASE clase, int adic1, int adic2){
+STATUS declarar_global(const char *lexema, CATEGORIA categ, int tipo, int clase,
+int tamano, int num_variables, int pos_variable, int num_params, int pos_param){
 
     if(!tabla || !tabla->global)
         return ERR;
@@ -33,18 +33,18 @@ STATUS declarar_global(const char *lexema, CATEGORIA categ, TIPO tipo,
     /*La funcion insertar_simbolo de hash ya busca primero
      el simbolo en la tabla*/
     return insertar_simbolo(tabla->global, lexema, categ, tipo, clase,
-            adic1, adic2);
+            tamano, num_variables, pos_variable, num_params, pos_param);
 }
 
-STATUS declarar_local(const char *lexema, CATEGORIA categ, TIPO tipo,
-        CLASE clase, int adic1, int adic2){
+STATUS declarar_local(const char *lexema, CATEGORIA categ, int tipo, int clase,
+int tamano, int num_variables, int pos_variable, int num_params, int pos_param){
     if(!tabla || !tabla->local)
         return ERR;
 
     /*La funcion insertar_simbolo de hash ya busca primero
      el simbolo en la tabla*/
     return insertar_simbolo(tabla->local, lexema, categ, tipo, clase,
-            adic1, adic2);
+            tamano, num_variables, pos_variable, num_params, pos_param);
 }
 
 INFO_SIMBOLO * uso_global(const char *lexema){
@@ -76,8 +76,8 @@ INFO_SIMBOLO * uso_local(const char *lexema){
     return info;
 }
 
-STATUS declarar_funcion(const char *lexema, CATEGORIA categ, TIPO tipo,
-        CLASE clase, int adic1, int adic2){
+STATUS declarar_funcion(const char *lexema, CATEGORIA categ, int tipo, int clase,
+int tamano, int num_variables, int pos_variable, int num_params, int pos_param){
 
     /*Comprobamos adicionalmente que no haya un ámbito local ya declarado*/
     if(!tabla || !tabla->global || tabla->local)
@@ -86,7 +86,7 @@ STATUS declarar_funcion(const char *lexema, CATEGORIA categ, TIPO tipo,
 
     /*si declarar la funcion en la tabla principal falla, devolvemos error*/
     if(insertar_simbolo(tabla->global, lexema, categ, tipo, clase,
-            adic1, adic2))
+            tamano, num_variables, pos_variable, num_params, pos_param))
         return ERR;
 
     /*init tabla local*/
@@ -101,7 +101,7 @@ STATUS declarar_funcion(const char *lexema, CATEGORIA categ, TIPO tipo,
     /*La funcion insertar_simbolo de hash ya busca primero
      el simbolo en la tabla*/
     return insertar_simbolo(tabla->local, lexema, categ, tipo, clase,
-            adic1, adic2);
+            tamano, num_variables, pos_variable, num_params, pos_param);
 }
 
 STATUS fin_funcion(){

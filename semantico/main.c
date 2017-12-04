@@ -1,14 +1,18 @@
 #include <stdio.h>
-#include "y.tab.h"
+#include "tablaSimbolos.h"
 
 extern char* yytext;
 extern FILE* yyin;
 extern int yylex(void);
+extern int yyparse(void);
 extern int fila;
 extern int columna;
 FILE *out;
+TablaSimbolos *tabla;
 
 int main(int argc, char **argv){
+
+	tabla = crear_tabla_simbolos();
 	
 	if(argc<3){
 		printf("Faltan parametros\n");

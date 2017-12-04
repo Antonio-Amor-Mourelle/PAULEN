@@ -1,5 +1,6 @@
 %{
 #include "alfa.h"
+#include "tablaSimbolos.h"
 #include <stdlib.h>
 #include <stdio.h>
 extern int yylex();
@@ -10,12 +11,25 @@ extern int error_morfologico;
 extern int fila;
 extern int columna;
 
+int tipo_actual; /*Entero o booleano*/
+int clase_actual; /*Escalar o vector*/
+int  tamanio_vector_actual = 0; /*Tamanno de un vector*/
+int pos_variable_local_actual=1; /*Posicion de una variable local en su declaracion*/
+
 void yyerror(char *s){
 	if(!error_morfologico) 
 		fprintf(stderr, "\t****Error sintactico en [lin %d, col %d]\n", fila, columna-yyleng);
+	else 
+		fprintf(stderr, "%s\n", s);
 }
 
 %}
+
+%union{
+	tipo_atributos atributos;
+}
+
+
 
 %token TOK_MAIN
 %token TOK_ARRAY
@@ -36,8 +50,18 @@ void yyerror(char *s){
 %token TOK_DISTINTO
 %token TOK_MENORIGUAL
 %token TOK_MAYORIGUAL
-%token TOK_IDENTIFICADOR
-%token TOK_CONSTANTE_ENTERA
+%token <atributos> TOK_IDENTIFICADOR
+%token <atributos> TOK_CONSTANTE_ENTERA
+
+%type <atributos> condicional
+%type <atributos> comparacion
+%type <atributos> elemento_vector
+%type <atributos> exp
+%type <atributos> constante
+%type <atributos> constante_entera
+%type <atributos> constante_logica
+%type <atributos> identificador
+
 
 %left TOK_AND TOK_OR
 %right '!'
@@ -52,12 +76,19 @@ programa : TOK_MAIN '{' declaraciones funciones sentencias '}'  {fprintf(out, ";
 declaraciones : declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}
                 | declaracion declaraciones {fprintf(out, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
 declaracion : clase identificadores ';' {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");}
-clase : clase_escalar {fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
-        | clase_vector {fprintf(out, ";R7:\t<clase> ::= <clase_vector>\n");}
-clase_escalar : tipo {fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");}
-tipo : TOK_INT {fprintf(out, ";R10:\t<tipo> ::= int\n");}
-       | TOK_BOOLEAN {fprintf(out, ";R11:\t<tipo> ::= boolean\n");}
-clase_vector : TOK_ARRAY tipo '[' constante_entera ']' {fprintf(out, ";R15:<clase_vector> ::= array <tipo> [ <constante_entera> ]\t\n");}
+clase : clase_escalar {clase_actual = ESCALAR; fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
+        | clase_vector {clase_actual = VECTOR; fprintf(out, ";R7:\t<clase> ::= <clase_vector>\n");}
+clase_escalar : tipo {tamanio_vector_actual=0; fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");}
+tipo : TOK_INT {tipo_actual = INT; fprintf(out, ";R10:\t<tipo> ::= int\n");}
+       | TOK_BOOLEAN {tipo_actual = BOOLEAN; fprintf(out, ";R11:\t<tipo> ::= boolean\n");}
+clase_vector : TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' {
+	if ((tamanio_vector_actual < 1 ) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
+		yyerror("Tamanno vector erroneo");
+	 } else {
+		tamanio_vector_actual = $4.valor_entero; 
+		fprintf(out, ";R15:<clase_vector> ::= array <tipo> [ <constante_entera> ]\t\n");
+	}
+}
 identificadores : identificador {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
                   | identificador','identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");}
 funciones : funcion funciones {fprintf(out, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
@@ -118,6 +149,12 @@ constante : constante_logica {fprintf(out, ";R99:\t<constante> ::= <constante_lo
 constante_logica : TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n");}
                    | TOK_FALSE {fprintf(out, ";R103:\t<constante_logica> ::= false\n");}
 constante_entera: TOK_CONSTANTE_ENTERA {fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
-identificador : TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");}
-
+identificador : TOK_IDENTIFICADOR {
+	if(declarar_global($1.lexema, VARIABLE, tipo_actual, clase_actual,
+	tamanio_vector_actual, 0, 0, 0, 0)==ERR){
+		yyerror("Identoficador ya declarado");
+	} else {
+		fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
+	}
+}
 %%
