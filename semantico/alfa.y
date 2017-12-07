@@ -20,12 +20,12 @@ int  tamanio_vector_actual = 0; /*Tamanno de un vector*/
 int pos_variable_local_actual=1; /*Posicion de una variable local en su declaracion*/
 
 void yyerror(char *s){
-	if(!error_morfologico && !error_semantico) 
+	if(!error_morfologico && !error_semantico)
 		fprintf(stderr, "\t****Error sintactico en [lin %d, col %d]\n", fila, columna-yyleng);
 	else if(error_semantico)
 		fprintf(stderr, "%s\n", s);
-		
-	else 
+
+	else
 		fprintf(stderr, "%s\n", s);
 }
 
@@ -84,7 +84,7 @@ programa : TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias
 escritura1: {
 	int i, tam;
 	NODO_HASH * aux;
-	/*Escritura de la seccion data*/  
+	/*Escritura de la seccion data*/
 	escribir_cabecera_compatibilidad(fpasm);
 	/*Mensajes generales*/
 	escribir_subseccion_data(fpasm);
@@ -114,7 +114,7 @@ clase_vector : TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' {
 	if ((tamanio_vector_actual < 1 ) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
 		yyerror("Tamanno vector erroneo");
 	 } else {
-		tamanio_vector_actual = $4.valor_entero; 
+		tamanio_vector_actual = $4.valor_entero;
 		fprintf(out, ";R15:<clase_vector> ::= array <tipo> [ <constante_entera> ]\t\n");
 	}
 }
@@ -161,11 +161,29 @@ escritura : TOK_PRINTF exp {
 	if($2.es_direccion)
 		escribir_operando(fpasm, $2.lexema, 1);
 	escribir(fpasm, $2.es_direccion, $2.tipo);
-	
+
 	fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");}
 retorno_funcion : TOK_RETURN exp {fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");}
-exp : exp '+' exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
-      | exp '-' exp {fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");}
+exp : exp '+' exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Suma de tipos incompatibles");}
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero +$3.valor_entero;
+		
+		/*Codigo ensamblador*/
+		sumar(fpasm, $1.es_direccion, $3.es_direccion);
+
+		fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
+      | exp '-' exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero -$3.valor_entero;
+		
+		/*Codigo ensamblador*/
+		restar(fpasm, $1.es_direccion, $3.es_direccion);
+		
+		fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");}
       | exp '/' exp {fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}
       | exp '*' exp {fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");}
       | '-' %prec MENOSU exp {fprintf(out, ";R76:\t<exp> ::= - <exp>\n");}
@@ -178,13 +196,13 @@ exp : exp '+' exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
 		if(!simbolo) {error_semantico = 1; yyerror("Variable sin declarar");}
 		if(simbolo->categoria == FUNCION) {error_semantico = 1; yyerror("No se puede hacer una asignacion a una funcion");}
 		if(simbolo->clase == VECTOR){error_semantico = 1; yyerror("No se puede hacer una asignacion a un vector");}
-		
+
 		$$.tipo = simbolo->tipo;
 		$$.es_direccion = 1;
 
 		/*Codigo ensamblador*/
 		escribir_operando(fpasm, $1.lexema, 1);
-		
+
 		fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
       | constante {
 		$$.tipo = $1.tipo;
