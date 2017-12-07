@@ -2,11 +2,7 @@
 #define GENERACION_H
 
 #include <stdio.h>
-
-
-/* Declaraciones de tipos de datos del compilador */
-#define ENTERO    0
-#define BOOLEANO     1
+#include "alfa.h"
 
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:

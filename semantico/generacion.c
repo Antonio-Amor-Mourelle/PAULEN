@@ -191,7 +191,7 @@ void leer(FILE * fpasm, char * nombre, int tipo) {
 
     fprintf(fpasm, "\tpush dword _%s\n", nombre);
 
-    if (tipo == ENTERO)
+    if (tipo == INT)
         fprintf(fpasm, "\tcall scan_int\n");
     else
         fprintf(fpasm, "\tcall scan_boolean\n");
@@ -215,7 +215,7 @@ void escribir(FILE * fpasm, int es_referencia, int tipo) {
     
     fprintf(fpasm, "\tpush dword eax\n");
 
-    if(tipo == ENTERO)
+    if(tipo == INT)
         fprintf(fpasm, "\tcall print_int\n");
     else
         fprintf(fpasm, "\tcall print_boolean\n");

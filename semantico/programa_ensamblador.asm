@@ -12,6 +12,17 @@ segment .text
 	
 main:
 	mov dword [__esp], esp
+	push dword  8 
+	pop dword eax
+	mov [_x], eax
+	push dword  _x 
+	push dword  _x 
+	pop eax
+	mov eax, [eax]
+	push dword eax
+	call print_int
+	add esp, 4
+	call print_endofline
 	mov dword esp, [__esp]
 	ret
 gestion_error_div_cero:

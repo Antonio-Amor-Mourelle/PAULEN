@@ -13,14 +13,18 @@ extern int error_morfologico;
 extern int fila;
 extern int columna;
 
+int error_semantico = 0;
 int tipo_actual; /*Entero o booleano*/
 int clase_actual; /*Escalar o vector*/
 int  tamanio_vector_actual = 0; /*Tamanno de un vector*/
 int pos_variable_local_actual=1; /*Posicion de una variable local en su declaracion*/
 
 void yyerror(char *s){
-	if(!error_morfologico) 
+	if(!error_morfologico && !error_semantico) 
 		fprintf(stderr, "\t****Error sintactico en [lin %d, col %d]\n", fila, columna-yyleng);
+	else if(error_semantico)
+		fprintf(stderr, "%s\n", s);
+		
 	else 
 		fprintf(stderr, "%s\n", s);
 }
@@ -136,14 +140,29 @@ sentencia_simple : asignacion {fprintf(out, ";R34:\t<sentencia_simple> ::= <asig
                    | retorno_funcion {fprintf(out, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");}
 bloque : condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
          | bucle {fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");}
-asignacion : TOK_IDENTIFICADOR '=' exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
+asignacion : TOK_IDENTIFICADOR '=' exp {
+		INFO_SIMBOLO *simbolo;
+		simbolo = uso_global($1.lexema);
+		if(!simbolo) {error_semantico = 1; yyerror("Variable sin declarar");}
+		if(simbolo->categoria == FUNCION) {error_semantico = 1; yyerror("No se puede hacer una asignacion a una funcion");}
+		if(simbolo->clase == VECTOR){error_semantico = 1; yyerror("No se puede hacer una asignacion a un vector");}
+		if(simbolo->tipo != $3.tipo){error_semantico = 1; yyerror("Los tipos de la expresion no coinciden");}
+
+		/*Codigo ensamblador*/
+		asignar(fpasm, $1.lexema, $3.es_direccion);
+		fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
              | elemento_vector '=' exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
 elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
 condicional : TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
               | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
 bucle : TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
 lectura : TOK_SCANF identificador {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");}
-escritura : TOK_PRINTF exp {fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");}
+escritura : TOK_PRINTF exp {
+	if($2.es_direccion)
+		escribir_operando(fpasm, $2.lexema, 1);
+	escribir(fpasm, $2.es_direccion, $2.tipo);
+	
+	fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");}
 retorno_funcion : TOK_RETURN exp {fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");}
 exp : exp '+' exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
       | exp '-' exp {fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");}
@@ -153,8 +172,25 @@ exp : exp '+' exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
       | exp TOK_AND exp {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
       | exp TOK_OR exp {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
       | '!' exp {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
-      | TOK_IDENTIFICADOR {fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
-      | constante {fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
+      | TOK_IDENTIFICADOR {
+		INFO_SIMBOLO *simbolo;
+		simbolo = uso_global($1.lexema);
+		if(!simbolo) {error_semantico = 1; yyerror("Variable sin declarar");}
+		if(simbolo->categoria == FUNCION) {error_semantico = 1; yyerror("No se puede hacer una asignacion a una funcion");}
+		if(simbolo->clase == VECTOR){error_semantico = 1; yyerror("No se puede hacer una asignacion a un vector");}
+		
+		$$.tipo = simbolo->tipo;
+		$$.es_direccion = 1;
+
+		/*Codigo ensamblador*/
+		escribir_operando(fpasm, $1.lexema, 1);
+		
+		fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
+      | constante {
+		$$.tipo = $1.tipo;
+  		$$.es_direccion = $1.es_direccion;
+
+		fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
       | '(' exp ')' {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
       | '(' comparacion ')' {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
       | elemento_vector {fprintf(out, ";R85:\t<exp> ::= <elemento_vector>\n");}
@@ -170,10 +206,21 @@ comparacion : exp TOK_IGUAL exp {fprintf(out, ";R93:\t<comparacion> ::= <exp> ==
               | exp '<' exp {fprintf(out, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
               | exp '>' exp {fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
 constante : constante_logica {fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
-            | constante_entera {fprintf(out, ";R100:\t<constante> ::= <constante_entera>\n");}
+            | constante_entera {
+		fprintf(out, ";R100:\t<constante> ::= <constante_entera>\n");}
 constante_logica : TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n");}
                    | TOK_FALSE {fprintf(out, ";R103:\t<constante_logica> ::= false\n");}
-constante_entera: TOK_CONSTANTE_ENTERA {fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");}
+constante_entera: TOK_CONSTANTE_ENTERA {
+	char valor[16];
+	/*Codigo semantico para las constantes*/
+	$$.tipo = INT;
+  	$$.es_direccion = 0;
+  	$$.valor_entero = $1.valor_entero;
+	sprintf(valor, "%d", $1.valor_entero);
+	/*Metemos la constante en la pila*/
+	escribir_operando(fpasm, valor, 0);
+	fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");
+}
 identificador : TOK_IDENTIFICADOR {
 	if(declarar_global($1.lexema, VARIABLE, tipo_actual, clase_actual,
 	tamanio_vector_actual, 0, 0, 0, 0)==ERR){
