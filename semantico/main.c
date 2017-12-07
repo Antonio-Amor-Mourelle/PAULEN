@@ -8,11 +8,13 @@ extern int yyparse(void);
 extern int fila;
 extern int columna;
 FILE *out;
+FILE *fpasm;
 TablaSimbolos *tabla;
 
 int main(int argc, char **argv){
 
 	tabla = crear_tabla_simbolos();
+	fpasm = fopen("programa_ensamblador.asm", "w");
 	
 	if(argc<3){
 		printf("Faltan parametros\n");
@@ -35,6 +37,7 @@ int main(int argc, char **argv){
 	yyparse();
 	fclose(yyin);
 	fclose(out);
+	fclose(fpasm);
 
 	return 0;
 		

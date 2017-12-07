@@ -1,12 +1,14 @@
 %{
 #include "alfa.h"
 #include "tablaSimbolos.h"
+#include "generacion.h"
 #include <stdlib.h>
 #include <stdio.h>
 extern int yylex();
 extern char* yytext;
 extern int yyleng;
 extern FILE* out;
+extern FILE* fpasm;
 extern int error_morfologico;
 extern int fila;
 extern int columna;
@@ -72,7 +74,30 @@ void yyerror(char *s){
 
 %%
 
-programa : TOK_MAIN '{' declaraciones funciones sentencias '}'  {fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
+programa : TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}'  {
+	escribir_fin(fpasm);
+	fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");}
+escritura1: {
+	int i, tam;
+	NODO_HASH * aux;
+	/*Escritura de la seccion data*/  
+	escribir_cabecera_compatibilidad(fpasm);
+	/*Mensajes generales*/
+	escribir_subseccion_data(fpasm);
+	escribir_cabecera_bss(fpasm);
+	/*Decalracion de las variables de la tabla de simbolos*/
+	for (i=0; i<tabla->global->tam; i++){
+		aux = tabla->global->tabla[i];
+		while(aux){
+			tam = aux->info->tamano ? aux->info->tamano : 1;
+			declarar_variable(fpasm, aux->info->lexema,  aux->info->tipo, tam);
+			aux = aux->siguiente;
+		}
+	}
+	/*Escritura del segmento de codigo. Todo listo para despues escribir main:*/
+	escribir_segmento_codigo(fpasm);
+	}
+escritura2: {escribir_inicio_main(fpasm);}
 declaraciones : declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}
                 | declaracion declaraciones {fprintf(out, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
 declaracion : clase identificadores ';' {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");}
@@ -111,7 +136,7 @@ sentencia_simple : asignacion {fprintf(out, ";R34:\t<sentencia_simple> ::= <asig
                    | retorno_funcion {fprintf(out, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");}
 bloque : condicional {fprintf(out, ";R40:\t<bloque> ::= <condicional>\n");}
          | bucle {fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");}
-asignacion : identificador '=' exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
+asignacion : TOK_IDENTIFICADOR '=' exp {fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
              | elemento_vector '=' exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
 elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
 condicional : TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
@@ -128,7 +153,7 @@ exp : exp '+' exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
       | exp TOK_AND exp {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
       | exp TOK_OR exp {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
       | '!' exp {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
-      | identificador {fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
+      | TOK_IDENTIFICADOR {fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
       | constante {fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
       | '(' exp ')' {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
       | '(' comparacion ')' {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
