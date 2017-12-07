@@ -207,17 +207,43 @@ exp : exp '+' exp {
 		/*Imprimimos traza*/
 		fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");}
       | '-' %prec MENOSU exp {
-		if($1.tipo==BOOLEAN){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
-		$$.tipo=$1.tipo;
+		if($2.tipo==BOOLEAN){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
+		$$.tipo=$2.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=-$1.valor_entero;
+		$$.valor_entero=-$2.valor_entero;
 		/*Codigo ensamblador*/
-		cambiar_signo(fpasm,$1.es_direccion);
+		cambiar_signo(fpasm,$2.es_direccion);
 		/*Imprimimos traza*/		
 		fprintf(out, ";R76:\t<exp> ::= - <exp>\n");}
-      | exp TOK_AND exp {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
-      | exp TOK_OR exp {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
-      | '!' exp {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
+      | exp TOK_AND exp {
+		if($1.tipo!=BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("AND de tipos incompatibles");}
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero && $3.valor_entero;
+		/*Codigo ensamblador*/
+		y(fpasm, es_referencia_1, es_referencia_2);
+		/*Imprimimos traza*/
+		fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
+      | exp TOK_OR exp {
+		if($1.tipo!=BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("OR de tipos incompatibles");}
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero || $3.valor_entero;
+		/*Codigo ensamblador*/
+		o(fpasm, es_referencia_1, es_referencia_2);
+		/*Imprimimos traza*/
+		fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
+      | '!' exp {
+
+		/*CUANTOS NOOOOOO??????*/
+		if($2.tipo!=BOOLEAN){error_semantico = 1; yyerror("NOT de tipos incompatibles");}
+		$$.tipo=$2.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=!$2.valor_entero;
+		/*Codigo ensamblador*/
+		no(fpasm, es_referencia, cuantos_no);
+		/*Imprimimos traza*/
+		fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
       | TOK_IDENTIFICADOR {
 		INFO_SIMBOLO *simbolo;
 		simbolo = uso_global($1.lexema);
@@ -270,7 +296,7 @@ constante_entera: TOK_CONSTANTE_ENTERA {
 identificador : TOK_IDENTIFICADOR {
 	if(declarar_global($1.lexema, VARIABLE, tipo_actual, clase_actual,
 	tamanio_vector_actual, 0, 0, 0, 0)==ERR){
-		yyerror("Identoficador ya declarado");
+		yyerror("Identificador ya declarado");
 	} else {
 		fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
 	}
