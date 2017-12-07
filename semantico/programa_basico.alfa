@@ -1,6 +1,13 @@
 main{
-	int x;
+	int x, x;
+	x = 8;
+	printf x;
 	x = 8+3;
-
+	printf x;
+	x = -3;
+	printf x;
+	x = 4/2;
+	printf x;
+	x = 10*3;
 	printf x;
 }
