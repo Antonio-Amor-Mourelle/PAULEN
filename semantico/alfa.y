@@ -271,7 +271,15 @@ lista_expresiones : exp resto_lista_expresiones {fprintf(out, ";R89:\t<lista_exp
                     | /**/ {fprintf(out, ";R90:\t<lista_expresiones> ::= \n");}
 resto_lista_expresiones : ',' exp resto_lista_expresiones {fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones> \n");}
                           | /**/ {fprintf(out, ";R92:\t<resto_lista_expresiones> ::= \n");}
-comparacion : exp TOK_IGUAL exp {fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
+comparacion : exp TOK_IGUAL exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
+		$$.tipo=BOOLEAN;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero == $3.valor_entero;
+		/*Codigo ensamblador*/
+		
+		/*Imprimimos traza*/
+		fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
               | exp TOK_DISTINTO exp {fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
               | exp TOK_MENORIGUAL exp {fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
               | exp TOK_MAYORIGUAL exp {fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
