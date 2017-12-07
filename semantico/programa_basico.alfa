@@ -1,13 +1,23 @@
 main{
-	int x, x;
-	x = 8;
+	boolean x, y;
+	
+	y = false;
+	
+	printf y;
+
+	y = !y;
+	
+	printf y;
+
+	x = false || true;
+
 	printf x;
-	x = 8+3;
+	
+	x = y && true;
+		
 	printf x;
-	x = -3;
-	printf x;
-	x = 4/2;
-	printf x;
-	x = 10*3;
+	
+	x = !!x;
+	
 	printf x;
 }
