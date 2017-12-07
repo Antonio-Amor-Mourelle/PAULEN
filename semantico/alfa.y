@@ -172,7 +172,7 @@ exp : exp '+' exp {
 		
 		/*Codigo ensamblador*/
 		sumar(fpasm, $1.es_direccion, $3.es_direccion);
-
+		/*Imprimimos traza*/
 		fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
       | exp '-' exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
@@ -182,11 +182,39 @@ exp : exp '+' exp {
 		
 		/*Codigo ensamblador*/
 		restar(fpasm, $1.es_direccion, $3.es_direccion);
-		
+		/*Imprimimos traza*/
 		fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");}
-      | exp '/' exp {fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}
-      | exp '*' exp {fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");}
-      | '-' %prec MENOSU exp {fprintf(out, ";R76:\t<exp> ::= - <exp>\n");}
+      | exp '/' exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Division de tipos incompatibles");}
+		/*COMPROBAR DIVISION POR CERO*/
+		if($3.valor_entero==0){error_semantico = 1; yyerror("Division entre 0");}	
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero / $3.valor_entero;
+		
+		/*Codigo ensamblador*/
+		dividir(fpasm, $1.es_direccion, $3.es_direccion);
+		/*Imprimimos traza*/
+		fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}
+      | exp '*' exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Multiplicacion de tipos incompatibles");}
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero *$3.valor_entero;
+		
+		/*Codigo ensamblador*/
+		multiplicar(fpasm, $1.es_direccion, $3.es_direccion);
+		/*Imprimimos traza*/
+		fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");}
+      | '-' %prec MENOSU exp {
+		if($1.tipo==BOOLEAN){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
+		$$.tipo=$1.tipo;
+		$$.es_direccion = 0;
+		$$.valor_entero=-$1.valor_entero;
+		/*Codigo ensamblador*/
+		cambiar_signo(fpasm,$1.es_direccion);
+		/*Imprimimos traza*/		
+		fprintf(out, ";R76:\t<exp> ::= - <exp>\n");}
       | exp TOK_AND exp {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
       | exp TOK_OR exp {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
       | '!' exp {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
@@ -202,7 +230,7 @@ exp : exp '+' exp {
 
 		/*Codigo ensamblador*/
 		escribir_operando(fpasm, $1.lexema, 1);
-
+		/*Imprimimos traza*/
 		fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
       | constante {
 		$$.tipo = $1.tipo;
