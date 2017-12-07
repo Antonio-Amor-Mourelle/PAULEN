@@ -1,6 +1,23 @@
 main{
-	int x;
-	x = 8+3;
+	boolean x, y;
+	
+	y = false;
+	
+	printf y;
 
+	y = !y;
+	
+	printf y;
+
+	x = false || true;
+
+	printf x;
+	
+	x = y && true;
+		
+	printf x;
+	
+	x = !!x;
+	
 	printf x;
 }

@@ -81,6 +81,7 @@ void escribir_fin(FILE* fpasm) {
     fprintf(fpasm, "\tcall print_string\n");
     fprintf(fpasm, "\tadd esp, 4\n");
     fprintf(fpasm, "\tcall print_endofline\n");
+    fprintf(fpasm, "\tmov dword esp, [__esp]\n");/*ERROR CORREGIDO*/
     fprintf(fpasm, "\tret");
 }
 

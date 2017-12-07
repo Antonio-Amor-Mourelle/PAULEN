@@ -19,6 +19,8 @@ int clase_actual; /*Escalar o vector*/
 int  tamanio_vector_actual = 0; /*Tamanno de un vector*/
 int pos_variable_local_actual=1; /*Posicion de una variable local en su declaracion*/
 
+int etiqueta = 1; /*Variable que cuenta el numero de etiquetas ensamblador para los saltos*/
+
 void yyerror(char *s){
 	if(!error_morfologico && !error_semantico)
 		fprintf(stderr, "\t****Error sintactico en [lin %d, col %d]\n", fila, columna-yyleng);
@@ -63,6 +65,7 @@ void yyerror(char *s){
 %type <atributos> comparacion
 %type <atributos> elemento_vector
 %type <atributos> exp
+%type <atributos> tipo
 %type <atributos> constante
 %type <atributos> constante_entera
 %type <atributos> constante_logica
@@ -221,7 +224,7 @@ exp : exp '+' exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero && $3.valor_entero;
 		/*Codigo ensamblador*/
-		y(fpasm, es_referencia_1, es_referencia_2);
+		y(fpasm, $1.es_direccion, $3.es_direccion);
 		/*Imprimimos traza*/
 		fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");}
       | exp TOK_OR exp {
@@ -230,24 +233,23 @@ exp : exp '+' exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero || $3.valor_entero;
 		/*Codigo ensamblador*/
-		o(fpasm, es_referencia_1, es_referencia_2);
+		o(fpasm,  $1.es_direccion, $3.es_direccion);
 		/*Imprimimos traza*/
 		fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");}
       | '!' exp {
-
-		/*CUANTOS NOOOOOO??????*/
 		if($2.tipo!=BOOLEAN){error_semantico = 1; yyerror("NOT de tipos incompatibles");}
 		$$.tipo=$2.tipo;
 		$$.es_direccion = 0;
 		$$.valor_entero=!$2.valor_entero;
 		/*Codigo ensamblador*/
-		no(fpasm, es_referencia, cuantos_no);
+		no(fpasm, $2.es_direccion, etiqueta);
+		etiqueta++;
 		/*Imprimimos traza*/
 		fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
       | TOK_IDENTIFICADOR {
 		INFO_SIMBOLO *simbolo;
 		simbolo = uso_global($1.lexema);
-		if(!simbolo) {error_semantico = 1; yyerror("Variable sin declarar");}
+		if(!simbolo) {error_semantico = 1; yyerror("Variable sin declarar ");}
 		if(simbolo->categoria == FUNCION) {error_semantico = 1; yyerror("No se puede hacer una asignacion a una funcion");}
 		if(simbolo->clase == VECTOR){error_semantico = 1; yyerror("No se puede hacer una asignacion a un vector");}
 
@@ -285,11 +287,39 @@ comparacion : exp TOK_IGUAL exp {
               | exp TOK_MAYORIGUAL exp {fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
               | exp '<' exp {fprintf(out, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
               | exp '>' exp {fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
-constante : constante_logica {fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
+constante : constante_logica {
+	$$.tipo = BOOLEAN;
+	$$.es_direccion = 0;
+	$$.valor_entero = $1.valor_entero;
+	
+	/*Imprimimos traza*/	
+	fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
             | constante_entera {
-		fprintf(out, ";R100:\t<constante> ::= <constante_entera>\n");}
-constante_logica : TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n");}
-                   | TOK_FALSE {fprintf(out, ";R103:\t<constante_logica> ::= false\n");}
+	$$.tipo = INT;
+	$$.es_direccion = 0;
+	$$.valor_entero = $1.valor_entero;
+	
+	
+	/*Imprimimos traza*/	
+	fprintf(out, ";R100:\t<constante> ::= <constante_entera>\n");}
+constante_logica : TOK_TRUE {
+	$$.tipo = BOOLEAN;
+	$$.es_direccion = 0;
+	$$.valor_entero = 1;
+
+	/*Metemos la constante en la pila*/
+	escribir_operando(fpasm, "1", 0);
+
+	/*Imprimimos traza*/
+	fprintf(out, ";R102:\t<constante_logica> ::= true\n");}
+                   | TOK_FALSE {
+	$$.tipo = BOOLEAN;
+	$$.es_direccion = 0;
+	$$.valor_entero = 0;
+	/*Metemos la constante en la pila*/
+	escribir_operando(fpasm, "0", 0);
+	/*Imprimimos traza*/
+	fprintf(out, ";R103:\t<constante_logica> ::= false\n");}
 constante_entera: TOK_CONSTANTE_ENTERA {
 	char valor[16];
 	/*Codigo semantico para las constantes*/
@@ -304,6 +334,7 @@ constante_entera: TOK_CONSTANTE_ENTERA {
 identificador : TOK_IDENTIFICADOR {
 	if(declarar_global($1.lexema, VARIABLE, tipo_actual, clase_actual,
 	tamanio_vector_actual, 0, 0, 0, 0)==ERR){
+		error_semantico = 1;
 		yyerror("Identificador ya declarado");
 	} else {
 		fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
