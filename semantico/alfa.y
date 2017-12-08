@@ -264,10 +264,25 @@ exp : exp '+' exp {
 		$$.tipo = $1.tipo;
   		$$.es_direccion = $1.es_direccion;
 
+		/*Imprimimos traza*/
 		fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
-      | '(' exp ')' {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
-      | '(' comparacion ')' {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
-      | elemento_vector {fprintf(out, ";R85:\t<exp> ::= <elemento_vector>\n");}
+      | '(' exp ')' {
+		$$.tipo = $2.tipo;
+  		$$.es_direccion = $2.es_direccion;
+
+		/*Imprimimos traza*/
+		fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
+      | '(' comparacion ')' {
+		$$.tipo = $2.tipo;
+  		$$.es_direccion = $2.es_direccion;
+
+		/*Imprimimos traza*/
+		fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
+      | elemento_vector {
+		$$.tipo = $1.tipo;
+  		$$.es_direccion = $1.es_direccion;
+		/*Imprimimos traza*/
+		fprintf(out, ";R85:\t<exp> ::= <elemento_vector>\n");}
       | identificador '(' lista_expresiones ')' {fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
 lista_expresiones : exp resto_lista_expresiones {fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
                     | /**/ {fprintf(out, ";R90:\t<lista_expresiones> ::= \n");}
@@ -279,24 +294,64 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero == $3.valor_entero;
 		/*Codigo ensamblador*/
-		
+		/*?*/
 		/*Imprimimos traza*/
 		fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
-              | exp TOK_DISTINTO exp {fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
-              | exp TOK_MENORIGUAL exp {fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
-              | exp TOK_MAYORIGUAL exp {fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
-              | exp '<' exp {fprintf(out, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
-              | exp '>' exp {fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
+              | exp TOK_DISTINTO exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
+		$$.tipo=BOOLEAN;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero != $3.valor_entero;
+		/*Codigo ensamblador*/
+		/*?*/
+		/*Imprimimos traza*/		
+		fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
+              | exp TOK_MENORIGUAL exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
+		$$.tipo=BOOLEAN;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero <= $3.valor_entero;
+		/*Codigo ensamblador*/
+		/*?*/
+		/*Imprimimos traza*/		
+		fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
+              | exp TOK_MAYORIGUAL exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
+		$$.tipo=BOOLEAN;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero >= $3.valor_entero;
+		/*Codigo ensamblador*/
+		/*?*/
+		/*Imprimimos traza*/		
+		fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
+              | exp '<' exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
+		$$.tipo=BOOLEAN;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero < $3.valor_entero;
+		/*Codigo ensamblador*/
+		/*?*/
+		/*Imprimimos traza*/		
+		fprintf(out, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
+              | exp '>' exp {
+		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
+		$$.tipo=BOOLEAN;
+		$$.es_direccion = 0;
+		$$.valor_entero=$1.valor_entero > $3.valor_entero;
+		/*Codigo ensamblador*/
+		/*?*/
+		/*Imprimimos traza*/
+		fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
 constante : constante_logica {
 	$$.tipo = BOOLEAN;
-	$$.es_direccion = 0;
+	$$.es_direccion = 0;/*en el enunciado pone: $$.es_direccion =$1.es_direccion*/
 	$$.valor_entero = $1.valor_entero;
 	
 	/*Imprimimos traza*/	
 	fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
             | constante_entera {
 	$$.tipo = INT;
-	$$.es_direccion = 0;
+	$$.es_direccion = 0;/*en el enunciado pone: $$.es_direccion =$1.es_direccion*/
 	$$.valor_entero = $1.valor_entero;
 	
 	
