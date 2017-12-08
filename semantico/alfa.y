@@ -263,7 +263,7 @@ exp : exp '+' exp {
       | constante {
 		$$.tipo = $1.tipo;
   		$$.es_direccion = $1.es_direccion;
-
+		
 		/*Imprimimos traza*/
 		fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
       | '(' exp ')' {
@@ -344,14 +344,14 @@ comparacion : exp TOK_IGUAL exp {
 		fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
 constante : constante_logica {
 	$$.tipo = BOOLEAN;
-	$$.es_direccion = 0;/*en el enunciado pone: $$.es_direccion =$1.es_direccion*/
+	$$.es_direccion = 0;/*VER en el enunciado pone: $$.es_direccion =$1.es_direccion*/
 	$$.valor_entero = $1.valor_entero;
 	
 	/*Imprimimos traza*/	
 	fprintf(out, ";R99:\t<constante> ::= <constante_logica>\n");}
             | constante_entera {
 	$$.tipo = INT;
-	$$.es_direccion = 0;/*en el enunciado pone: $$.es_direccion =$1.es_direccion*/
+	$$.es_direccion = 0;/*VER en el enunciado pone: $$.es_direccion =$1.es_direccion*/
 	$$.valor_entero = $1.valor_entero;
 	
 	
