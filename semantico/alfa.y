@@ -19,7 +19,7 @@ int clase_actual; /*Escalar o vector*/
 int  tamanio_vector_actual = 0; /*Tamanno de un vector*/
 int pos_variable_local_actual=1; /*Posicion de una variable local en su declaracion*/
 
-int etiqueta = 1; /*Variable que cuenta el numero de etiquetas ensamblador para los saltos*/
+int etiqueta = 0; /*Variable que cuenta el numero de etiquetas ensamblador para los saltos*/
 
 void yyerror(char *s){
 	if(!error_morfologico && !error_semantico)
@@ -63,6 +63,8 @@ void yyerror(char *s){
 %token <atributos> TOK_CONSTANTE_ENTERA
 
 %type <atributos> condicional
+%type <atributos> if_exp
+%type <atributos> if_exp_sentencias
 %type <atributos> comparacion
 %type <atributos> elemento_vector
 %type <atributos> exp
@@ -71,6 +73,7 @@ void yyerror(char *s){
 %type <atributos> constante_entera
 %type <atributos> constante_logica
 %type <atributos> identificador
+
 
 
 %left TOK_AND TOK_OR
@@ -157,8 +160,24 @@ asignacion : TOK_IDENTIFICADOR '=' exp {
 		fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
              | elemento_vector '=' exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
 elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
-condicional : TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
-              | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
+condicional : if_exp_sentencias {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
+              | if_exp_sentencias TOK_ELSE '{' sentencias '}' {
+	
+	/*Ensamblador*/
+	fin_if_else(fpasm, $1.etiqueta);
+
+	fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
+if_exp_sentencias: if_exp sentencias '}' {
+	$$.etiqueta=$1.etiqueta;
+	fin_then(fpasm, $$.etiqueta);	
+}
+if_exp: TOK_IF '(' exp ')' '{' {
+	if($3.tipo!=BOOLEAN) yyerror("La expresion debe ser booleana");
+	$$.etiqueta=etiqueta++;
+
+	/*Llamamos a la funcion ensamblador*/
+	if_then_else(fpasm, $3.es_direccion, $$.etiqueta);
+}
 bucle : TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
 lectura : TOK_SCANF TOK_IDENTIFICADOR {
 	fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");
@@ -186,7 +205,7 @@ exp : exp '+' exp {
 		
 		/*Codigo ensamblador*/
 		sumar(fpasm, $1.es_direccion, $3.es_direccion);
-		/*Imprimimos traza*/
+		/*Imprimimos  'traza*/
 		fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
       | exp '-' exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
@@ -253,8 +272,9 @@ exp : exp '+' exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=!$2.valor_entero;
 		/*Codigo ensamblador*/
-		no(fpasm, $2.es_direccion, etiqueta);
 		etiqueta++;
+		no(fpasm, $2.es_direccion, etiqueta);
+		
 		/*Imprimimos traza*/
 		fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
       | TOK_IDENTIFICADOR {
@@ -303,10 +323,12 @@ comparacion : exp TOK_IGUAL exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}
 		$$.tipo=BOOLEAN;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero == $3.valor_entero;
+
 		/*Codigo ensamblador*/
-		/*?*/
+		etiqueta++;
+		es_igual(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/
+		
 		fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
               | exp TOK_DISTINTO exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion de tipos incompatibles");}

@@ -105,4 +105,11 @@ void no(FILE* fpasm, int es_referencia, int cuantos_no);
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_referencia, int tipo);
 
+/*FUNCIONES ADICIONALES PARA LAS COMPARACIONES*/
+/*Compara si los dos operandos en la cima de la pila son iguales*/
+void es_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
+void if_then_else(FILE* fpasm, int es_referencia, int etiqueta);
+void fin_then(FILE* fpasm, int etiqueta);
+void fin_if_else(FILE* fpasm, int etiqueta);
+
 #endif

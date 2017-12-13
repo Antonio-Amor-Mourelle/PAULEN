@@ -1,3 +1,17 @@
 Autores: Antonio Amor Mourelle
 	 Esther Lopez Ramos
-Estamos haciendo el paso 12
+Hemos terminado todos los pasos.
+
+Respuestas a las preguntas:
+	1. La operacion de la ALU que se encarga de las comparaciones
+	es cmp, que hasta donde sabemos de MICRO, realiza una resta
+	2. El resultado de la operación resta modifica los flags, 
+	pero a nosotros nos interesa hacer saltos y escribir el 
+	valor que toque en cada caso: si son iguales 1 y si no lo 
+	son 0.
+	3. Hay que dividir las reglas del if porque tenemos dos 
+	bloques de codigo distintos: if-then y else.
+	4. Porque dentro de una estructura if-else puede haber otras
+	anidadas y no debemos confundir las etiquetas de unas con 
+	otras.
+	

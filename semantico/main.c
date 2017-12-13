@@ -12,7 +12,8 @@ FILE *fpasm;
 TablaSimbolos *tabla;
 
 int main(int argc, char **argv){
-
+	out = stdout;
+	
 	tabla = crear_tabla_simbolos();
 	fpasm = fopen("programa_ensamblador.asm", "w");
 	
@@ -27,16 +28,15 @@ int main(int argc, char **argv){
 		return -1; 
 	}
     /*Cuidado, no llamar a la salida yyout*/
-	out=fopen(argv[2], "w");
+	fpasm=fopen(argv[2], "w");
 
-	if (!out){
+	if (!fpasm){
 		printf("No se encontro el fichero\n");
 		fclose(yyin);
 		return -1;
 	}
 	yyparse();
 	fclose(yyin);
-	fclose(out);
 	fclose(fpasm);
 
 	return 0;
