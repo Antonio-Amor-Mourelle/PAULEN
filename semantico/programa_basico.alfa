@@ -1,23 +1,11 @@
-main{
-	boolean x, y;
-	
-	y = false;
-	
-	printf y;
+main {
 
-	y = !y;
-	
-	printf y;
+        int x1, x2; 
 
-	x = false || true;
+        scanf x1;
+        scanf x2;
 
-	printf x;
-	
-	x = y && true;
-		
-	printf x;
-	
-	x = !!x;
-	
-	printf x;
+        printf 3+x1+x2;
+
 }
+

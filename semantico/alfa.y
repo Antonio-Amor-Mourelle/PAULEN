@@ -29,6 +29,7 @@ void yyerror(char *s){
 
 	else
 		fprintf(stderr, "%s\n", s);
+	return;
 }
 
 %}
@@ -159,7 +160,17 @@ elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R48:\t<elemento_vec
 condicional : TOK_IF '(' exp ')' '{' sentencias '}' {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
               | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
 bucle : TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
-lectura : TOK_SCANF identificador {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");}
+lectura : TOK_SCANF TOK_IDENTIFICADOR {
+	fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");
+	/*Buscar el identificador en la tabla*/
+	INFO_SIMBOLO *simbolo;
+	simbolo = uso_global($2.lexema);
+	if(!simbolo) {error_semantico = 1; yyerror("Variable sin declarar ");}
+	if(simbolo->categoria == FUNCION) {error_semantico = 1; yyerror("No se puede hacer una lectura en una funcion");}
+	if(simbolo->clase == VECTOR){error_semantico = 1; yyerror("No se puede hacer una lectura en un vector");}
+	leer(fpasm, $2.lexema, simbolo->tipo);
+	
+}
 escritura : TOK_PRINTF exp {
 	if($2.es_direccion)
 		escribir_operando(fpasm, $2.lexema, 1);
