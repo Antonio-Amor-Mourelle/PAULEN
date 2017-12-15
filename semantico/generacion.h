@@ -122,4 +122,7 @@ void fin_if_else(FILE* fpasm, int etiqueta);
 void inicio_while(FILE* fpasm, int etiqueta);
 void cmp_while(FILE* fpasm, int es_referencia,int etiqueta);
 void fin_while(FILE* fpasm, int etiqueta);
+
+void inicio_declarar_funcion(FILE* fpasm,char* nombre);
+void fin_declarar_funcion(FILE* fpasm);
 #endif

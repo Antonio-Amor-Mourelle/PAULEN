@@ -477,3 +477,16 @@ void fin_while(FILE* fpasm, int etiqueta){
     fprintf(fpasm,"\tjmp near while_%d\n",etiqueta);
     fprintf(fpasm,"fin_while_%d:\n",etiqueta);
 }
+
+
+void inicio_declarar_funcion(FILE* fpasm,char* nombre){
+    fprintf(fpasm,"_%s:\n",nombre);
+    fprintf(fpasm,"\tpush ebp\n");
+    fprintf(fpasm,"\tmov ebp, esp\n");
+    fprintf(fpasm,"\tmov eps, 4\n");
+}
+void fin_declarar_funcion(FILE* fpasm){
+    fprintf(fpasm,"\t_mov esp, ebp\n");
+    fprintf(fpasm,"\tpop ebp\n");
+    fprintf(fpasm,"\ret\n");
+}
