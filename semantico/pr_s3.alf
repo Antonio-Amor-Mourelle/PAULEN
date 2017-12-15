@@ -3,5 +3,5 @@ main {
     function int hola ( int n ) {
         return n;
     }
-
+    printf 1;
 }

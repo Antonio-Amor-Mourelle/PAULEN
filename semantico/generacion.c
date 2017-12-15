@@ -50,7 +50,7 @@ void escribir_segmento_codigo(FILE* fpasm) {
     fprintf(fpasm, "\textern scan_int, print_int, scan_float, print_float\n");
     fprintf(fpasm, "\textern scan_boolean, print_boolean\n");
     fprintf(fpasm, "\textern print_endofline, print_blank, print_string\n");
-    fprintf(fpasm, "\textern alfa_malloc, alfa_free, ld_float\n\t");
+    fprintf(fpasm, "\textern alfa_malloc, alfa_free, ld_float\n");
 
 }
 
@@ -479,14 +479,18 @@ void fin_while(FILE* fpasm, int etiqueta){
 }
 
 
-void inicio_declarar_funcion(FILE* fpasm,char* nombre){
+void inicio_declarar_funcion(FILE* fpasm, char* nombre, int num_variables_locales){
     fprintf(fpasm,"_%s:\n",nombre);
     fprintf(fpasm,"\tpush ebp\n");
     fprintf(fpasm,"\tmov ebp, esp\n");
-    fprintf(fpasm,"\tmov eps, 4\n");
+    fprintf(fpasm,"\tmov esp, 4*%d\n", num_variables_locales);
 }
-void fin_declarar_funcion(FILE* fpasm){
-    fprintf(fpasm,"\t_mov esp, ebp\n");
+void fin_declarar_funcion(FILE* fpasm, int es_direccion){
+    fprintf(fpasm,"\tpop dword eax\n");
+    if (es_direccion)
+        fprintf(fpasm,"\tmov eax , [eax]\n");
+
+    fprintf(fpasm,"\tmov esp, ebp\n");
     fprintf(fpasm,"\tpop ebp\n");
-    fprintf(fpasm,"\ret\n");
+    fprintf(fpasm,"\tret\n");
 }

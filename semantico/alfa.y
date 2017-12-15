@@ -173,7 +173,7 @@ fn_name : TOK_FUNCTION tipo TOK_IDENTIFICADOR {
 	ambito_local=1;
 
 	/*codigo ensamblador*/
-	inicio_declarar_funcion(fpasm, $$.lexema);
+	inicio_declarar_funcion(fpasm, $$.lexema, num_parametros_actual);
 }
 fn_declaration : fn_name '(' parametros_funcion ')' '{' declaraciones_funcion {
 	strcpy($$.lexema,$1.lexema);	
@@ -314,7 +314,7 @@ retorno_funcion : TOK_RETURN exp {
 		}
 		num_return++;
 		/*Codigo ensamblador*/
-		fin_declarar_funcion(fpasm);
+		fin_declarar_funcion(fpasm, $2.es_direccion);
 		/* Imprimimos la traza*/		
 		fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");}
 exp : exp '+' exp {
@@ -395,14 +395,21 @@ exp : exp '+' exp {
 		/*Imprimimos traza*/
 		fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
       | TOK_IDENTIFICADOR {
+		/*TODO: cuidado al escribir el operando, distinguir entre 3 casos, variable global, 
+		variable local o parametro de funcion*/
 		INFO_SIMBOLO *simbolo;
-		simbolo = uso_global($1.lexema);
+		if(ambito_local){
+			simbolo = uso_local($1.lexema);
+		} else {
+			simbolo = uso_global($1.lexema);
+		}
 		if(!simbolo) {
-		error_semantico = 1;
-		asprintf(&cadaux, "Acceso a variable no declarada (%s).",$1.lexema);
-		yyerror(cadaux);
-		free(cadaux);
-		return -1;}
+			error_semantico = 1;
+			asprintf(&cadaux, "Acceso a variable no declarada (%s).",$1.lexema);
+			yyerror(cadaux);
+			free(cadaux);
+			return -1;
+		}
 		if(simbolo->categoria == FUNCION) {error_semantico = 1; yyerror("Variable local de tipo no escalar.");return -1;}
 		if(simbolo->clase == VECTOR){error_semantico = 1; yyerror("Variable local de tipo no escalar.");return -1;}
 
