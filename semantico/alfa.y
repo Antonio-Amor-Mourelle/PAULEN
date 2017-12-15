@@ -201,7 +201,7 @@ exp : exp '+' exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Suma de tipos incompatibles");}
 		$$.tipo=$1.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero +$3.valor_entero;
+
 		
 		/*Codigo ensamblador*/
 		sumar(fpasm, $1.es_direccion, $3.es_direccion);
@@ -211,7 +211,6 @@ exp : exp '+' exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
 		$$.tipo=$1.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero -$3.valor_entero;
 		
 		/*Codigo ensamblador*/
 		restar(fpasm, $1.es_direccion, $3.es_direccion);
@@ -220,10 +219,9 @@ exp : exp '+' exp {
       | exp '/' exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Division de tipos incompatibles");}
 		/*COMPROBAR DIVISION POR CERO*/
-		if($3.valor_entero==0){error_semantico = 1; yyerror("Division entre 0");}	
+		if($3.valor_entero==0 && !$3.es_direccion){error_semantico = 1; yyerror("Division entre 0"); return -1;}	
 		$$.tipo=$1.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero / $3.valor_entero;
 		
 		/*Codigo ensamblador*/
 		dividir(fpasm, $1.es_direccion, $3.es_direccion);
@@ -233,7 +231,6 @@ exp : exp '+' exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Multiplicacion de tipos incompatibles");}
 		$$.tipo=$1.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero *$3.valor_entero;
 		
 		/*Codigo ensamblador*/
 		multiplicar(fpasm, $1.es_direccion, $3.es_direccion);
@@ -243,7 +240,7 @@ exp : exp '+' exp {
 		if($2.tipo==BOOLEAN){error_semantico = 1; yyerror("Resta de tipos incompatibles");}
 		$$.tipo=$2.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=-$2.valor_entero;
+
 		/*Codigo ensamblador*/
 		cambiar_signo(fpasm,$2.es_direccion);
 		/*Imprimimos traza*/		
@@ -252,7 +249,7 @@ exp : exp '+' exp {
 		if($1.tipo!=BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("AND de tipos incompatibles");}
 		$$.tipo=$1.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero && $3.valor_entero;
+
 		/*Codigo ensamblador*/
 		y(fpasm, $1.es_direccion, $3.es_direccion);
 		/*Imprimimos traza*/
@@ -261,7 +258,7 @@ exp : exp '+' exp {
 		if($1.tipo!=BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("OR de tipos incompatibles");}
 		$$.tipo=$1.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=$1.valor_entero || $3.valor_entero;
+
 		/*Codigo ensamblador*/
 		o(fpasm,  $1.es_direccion, $3.es_direccion);
 		/*Imprimimos traza*/
@@ -270,7 +267,7 @@ exp : exp '+' exp {
 		if($2.tipo!=BOOLEAN){error_semantico = 1; yyerror("NOT de tipos incompatibles");}
 		$$.tipo=$2.tipo;
 		$$.es_direccion = 0;
-		$$.valor_entero=!$2.valor_entero;
+
 		/*Codigo ensamblador*/
 		etiqueta++;
 		no(fpasm, $2.es_direccion, etiqueta);
@@ -346,6 +343,7 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero <= $3.valor_entero;
 		/*Codigo ensamblador*/
+		etiqueta++;
 		es_menor_o_igual(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/		
 		fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
@@ -355,7 +353,8 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero >= $3.valor_entero;
 		/*Codigo ensamblador*/
-		/*?*/
+		etiqueta++;
+		es_mayor_o_igual(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/		
 		fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}
               | exp '<' exp {
@@ -364,7 +363,8 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero < $3.valor_entero;
 		/*Codigo ensamblador*/
-		/*?*/
+		etiqueta++;
+		es_menor(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/		
 		fprintf(out, ";R97:\t<comparacion> ::= <exp> < <exp>\n");}
               | exp '>' exp {
@@ -373,7 +373,8 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero > $3.valor_entero;
 		/*Codigo ensamblador*/
-		/*?*/
+		etiqueta++;
+		es_mayor(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/
 		fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");}
 constante : constante_logica {

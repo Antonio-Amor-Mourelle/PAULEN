@@ -21,18 +21,16 @@ main:
 	push dword _x2
 	call scan_int
 	add esp, 4
-	push dword  3 
 	push dword  _x1 
-	pop dword edx
-	pop dword eax
-	mov edx, dword [edx]
-	add eax, edx
-	push dword eax
 	push dword  _x2 
-	pop dword edx
+	pop dword ebx
 	pop dword eax
-	mov edx, dword [edx]
-	add eax, edx
+	mov eax, [eax]
+	cdq
+	mov ebx, [ebx]
+	cmp ebx, 0
+	je gestion_error_div_cero
+	idiv ebx
 	push dword eax
 	pop eax
 	push dword eax
@@ -69,12 +67,12 @@ fin_igual_1:
 	mov eax, dword [eax]
 	mov edx, dword [edx]
 	cmp eax, edx
-	jle near menor_o_igual_1
+	jg near mayor_2
 	push dword 0
-	jmp near fin_menor_o_igual_1
-menor_o_igual_1:
+	jmp near fin_mayor_2
+mayor_2:
 	push dword 1
-fin_menor_o_igual_1:
+fin_mayor_2:
 	pop dword eax
 	mov [_y1], eax
 	push dword  _y1 

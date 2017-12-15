@@ -110,6 +110,9 @@ void escribir(FILE* fpasm, int es_referencia, int tipo);
 void es_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
 void es_distinto(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
 void es_menor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
+void es_mayor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
+void es_menor(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
+void es_mayor(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta);
 
 
 void if_then_else(FILE* fpasm, int es_referencia, int etiqueta);

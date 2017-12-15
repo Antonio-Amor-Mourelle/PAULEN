@@ -292,7 +292,7 @@ void dividir(FILE * fpasm, int es_referencia_1, int es_referencia_2) {
     /* Aqui habria que comprobar que ebx o [ebx] no es 0 y saltar
    donde corresponda si lo es */
     fprintf(fpasm, "\tcmp ebx, 0\n");
-    fprintf(fpasm, "\tje msg_error_division\n");
+    fprintf(fpasm, "\tje gestion_error_div_cero\n");
 
     fprintf(fpasm, "\tidiv ebx\n");
 
@@ -388,6 +388,60 @@ void es_menor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int
     fprintf(fpasm, "\tpush dword 1\n");
     fprintf(fpasm, "fin_menor_o_igual_%d:\n", etiqueta);
 
+}
+void es_mayor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
+    fprintf(fpasm, "\tpop dword edx\n");
+    fprintf(fpasm, "\tpop dword eax\n");
+    if (es_referencia_1)
+        fprintf(fpasm, "\tmov eax, dword [eax]\n");
+    if (es_referencia_2)
+        fprintf(fpasm, "\tmov edx, dword [edx]\n");
+
+    /*Comparacion*/
+    fprintf(fpasm, "\tcmp eax, edx\n");
+    fprintf(fpasm, "\tjge near mayor_o_igual_%d\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 0\n");
+    fprintf(fpasm, "\tjmp near fin_mayor_o_igual_%d\n", etiqueta);
+    fprintf(fpasm, "mayor_o_igual_%d:\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 1\n");
+    fprintf(fpasm, "fin_mayor_o_igual_%d:\n", etiqueta);
+}
+
+
+void es_menor(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
+    fprintf(fpasm, "\tpop dword edx\n");
+    fprintf(fpasm, "\tpop dword eax\n");
+    if (es_referencia_1)
+        fprintf(fpasm, "\tmov eax, dword [eax]\n");
+    if (es_referencia_2)
+        fprintf(fpasm, "\tmov edx, dword [edx]\n");
+
+    /*Comparacion*/
+    fprintf(fpasm, "\tcmp eax, edx\n");
+    fprintf(fpasm, "\tjl near menor_%d\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 0\n");
+    fprintf(fpasm, "\tjmp near fin_menor_%d\n", etiqueta);
+    fprintf(fpasm, "menor_%d:\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 1\n");
+    fprintf(fpasm, "fin_menor_%d:\n", etiqueta);
+}
+
+void es_mayor(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
+    fprintf(fpasm, "\tpop dword edx\n");
+    fprintf(fpasm, "\tpop dword eax\n");
+    if (es_referencia_1)
+        fprintf(fpasm, "\tmov eax, dword [eax]\n");
+    if (es_referencia_2)
+        fprintf(fpasm, "\tmov edx, dword [edx]\n");
+
+    /*Comparacion*/
+    fprintf(fpasm, "\tcmp eax, edx\n");
+    fprintf(fpasm, "\tjg near mayor_%d\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 0\n");
+    fprintf(fpasm, "\tjmp near fin_mayor_%d\n", etiqueta);
+    fprintf(fpasm, "mayor_%d:\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 1\n");
+    fprintf(fpasm, "fin_mayor_%d:\n", etiqueta);
 }
 
 void if_then_else(FILE* fpasm, int es_referencia, int etiqueta){    
