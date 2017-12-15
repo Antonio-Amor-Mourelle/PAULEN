@@ -350,6 +350,46 @@ void es_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiquet
     
 }
 
+
+void es_distinto(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
+    
+    fprintf(fpasm, "\tpop dword edx\n");
+    fprintf(fpasm, "\tpop dword eax\n");
+    if (es_referencia_1)
+        fprintf(fpasm, "\tmov eax, dword [eax]\n");
+    if (es_referencia_2)
+        fprintf(fpasm, "\tmov edx, dword [edx]\n");
+
+    /*Comparacion*/
+    fprintf(fpasm, "\tcmp eax, edx\n");
+    fprintf(fpasm, "\tjne near no_igual_%d\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 0\n");
+    fprintf(fpasm, "\tjmp near fin_igual_%d\n", etiqueta);
+    fprintf(fpasm, "no_igual_%d:\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 1\n");
+    fprintf(fpasm, "fin_igual_%d:\n", etiqueta);
+
+}
+
+void es_menor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){	    
+    fprintf(fpasm, "\tpop dword edx\n");
+    fprintf(fpasm, "\tpop dword eax\n");
+    if (es_referencia_1)
+        fprintf(fpasm, "\tmov eax, dword [eax]\n");
+    if (es_referencia_2)
+        fprintf(fpasm, "\tmov edx, dword [edx]\n");
+
+    /*Comparacion*/
+    fprintf(fpasm, "\tcmp eax, edx\n");
+    fprintf(fpasm, "\tjle near menor_o_igual_%d\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 0\n");
+    fprintf(fpasm, "\tjmp near fin_menor_o_igual_%d\n", etiqueta);
+    fprintf(fpasm, "menor_o_igual_%d:\n", etiqueta);
+    fprintf(fpasm, "\tpush dword 1\n");
+    fprintf(fpasm, "fin_menor_o_igual_%d:\n", etiqueta);
+
+}
+
 void if_then_else(FILE* fpasm, int es_referencia, int etiqueta){    
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_referencia)

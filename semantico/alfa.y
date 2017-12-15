@@ -336,7 +336,8 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero != $3.valor_entero;
 		/*Codigo ensamblador*/
-		/*?*/
+		etiqueta++;
+		es_distinto(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/		
 		fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
               | exp TOK_MENORIGUAL exp {
@@ -345,7 +346,7 @@ comparacion : exp TOK_IGUAL exp {
 		$$.es_direccion = 0;
 		$$.valor_entero=$1.valor_entero <= $3.valor_entero;
 		/*Codigo ensamblador*/
-		/*?*/
+		es_menor_o_igual(fpasm, $1.es_direccion, $3.es_direccion, etiqueta);
 		/*Imprimimos traza*/		
 		fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
               | exp TOK_MAYORIGUAL exp {

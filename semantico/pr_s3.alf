@@ -11,22 +11,10 @@ main {
         y1 = (x1 == x2);
 
         printf y1;
-        scanf y1;
-        scanf y2;
+
+        y1 = (x1 <= x2);
 
         printf y1;
-
-        if (
-               (y1 == y2)
-           )
-        {
-                printf 1;
-        }
-        else
-        {
-                printf 0;
-        }
-
 
 }
 
