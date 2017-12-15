@@ -10,7 +10,7 @@
 */
 
 void escribir_cabecera_compatibilidad(FILE* fpasm);
-/* 
+/*
    Función para imprimir el código NASM necesario para que sea multiplataforma.
 */
 
@@ -40,14 +40,14 @@ void escribir_segmento_codigo(FILE* fpasm);
 */
 
 void escribir_inicio_main(FILE* fpasm);
-/* 
+/*
    En este punto se debe escribir, al menos, la etiqueta main y la sentencia que guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
 
 void escribir_fin(FILE* fpasm);
 /*
    Al final del programa se escribe:
-El código NASM para salir de manera controlada cuando se detecta un error en tiempo de ejecución (cada error saltará a una etiqueta situada en esta zona 
+El código NASM para salir de manera controlada cuando se detecta un error en tiempo de ejecución (cada error saltará a una etiqueta situada en esta zona
 en la que se imprimirá el correspondiente mensaje y se saltará a la zona de finalización del programa).
 En el final del programa se debe:
          ·Restaurar el valor del puntero de pila (a partir de su variable __esp)
@@ -63,7 +63,7 @@ es_var indica si este operando es una variable (como por ejemplo b1) con un 1 u 
 
 void asignar(FILE* fpasm, char* nombre, int es_referencia);
 /*
-Genera el código para asignar valor a la variable de nombre nombre. 
+Genera el código para asignar valor a la variable de nombre nombre.
 Se toma el valor de la cima de la pila.
 El último argumento es el que indica si lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
 */
@@ -87,7 +87,7 @@ void y(FILE* fpasm, int es_referencia_1, int es_referencia_2);
 
 void cambiar_signo(FILE* fpasm, int es_referencia);
 /*
-   Función aritmética de cambio de signo. 
+   Función aritmética de cambio de signo.
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
 
@@ -101,7 +101,7 @@ void no(FILE* fpasm, int es_referencia, int cuantos_no);
 /*
    Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEANO) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
-*/
+*/ 
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_referencia, int tipo);
 
@@ -119,4 +119,7 @@ void if_then_else(FILE* fpasm, int es_referencia, int etiqueta);
 void fin_then(FILE* fpasm, int etiqueta);
 void fin_if_else(FILE* fpasm, int etiqueta);
 
+void inicio_while(FILE* fpasm, int etiqueta);
+void cpm_while(FILE* fpasm, int etiqueta);
+void fin_while(FILE* fpasm, int etiqueta);
 #endif

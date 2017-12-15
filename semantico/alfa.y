@@ -74,6 +74,12 @@ void yyerror(char *s){
 %type <atributos> constante_logica
 %type <atributos> identificador
 
+%type <atributos> while
+%type <atributos> while_exp
+%type <atributos> bucle
+
+
+
 
 
 %left TOK_AND TOK_OR
@@ -169,6 +175,7 @@ condicional : if_exp_sentencias {fprintf(out, ";R50:\t<condicional> ::= if ( <ex
 	fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
 if_exp_sentencias: if_exp sentencias '}' {
 	$$.etiqueta=$1.etiqueta;
+	/*Llamamos a la funcion ensamblador*/
 	fin_then(fpasm, $$.etiqueta);	
 }
 if_exp: TOK_IF '(' exp ')' '{' {
@@ -178,7 +185,27 @@ if_exp: TOK_IF '(' exp ')' '{' {
 	/*Llamamos a la funcion ensamblador*/
 	if_then_else(fpasm, $3.es_direccion, $$.etiqueta);
 }
-bucle : TOK_WHILE '(' exp ')' '{' sentencias '}' {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
+
+while : TOK_WHILE '(' {
+	$$.etiqueta = etiqueta++;
+	/*Ensamblador*/
+	inicio_while(fpasm,$$.etiqueta);
+}
+
+while_exp : while exp ')' '{' {
+		if($2.tipo!=BOOLEAN){error_semantico = 1; yyerror("while sin expresion");}
+		$$.etiqueta=$1.etiqueta;
+		/*Ensamblador*/
+		cpm_while(fpasm,$$.etiqueta);
+
+}
+
+bucle : while_exp sentencias '}' {
+	/*Ensamblador*/
+	fin_while(fpasm,$1.etiqueta);
+	/*Imprimimos traza*/
+	fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");}
+
 lectura : TOK_SCANF TOK_IDENTIFICADOR {
 	fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");
 	/*Buscar el identificador en la tabla*/

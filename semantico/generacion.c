@@ -213,7 +213,7 @@ void escribir(FILE * fpasm, int es_referencia, int tipo) {
     fprintf(fpasm, "\tpop eax\n");
     if (es_referencia)
         fprintf(fpasm, "\tmov eax, [eax]\n");
-    
+
     fprintf(fpasm, "\tpush dword eax\n");
 
     if(tipo == INT)
@@ -222,7 +222,7 @@ void escribir(FILE * fpasm, int es_referencia, int tipo) {
         fprintf(fpasm, "\tcall print_boolean\n");
 
     fprintf(fpasm, "\tadd esp, 4\n");
-    
+
     fprintf(fpasm, "\tcall print_endofline\n");
 
 }
@@ -310,7 +310,7 @@ void o(FILE * fpasm, int es_referencia_1, int es_referencia_2) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     if (es_referencia_2)
         fprintf(fpasm, "\tmov ebx, [ebx]\n");
-     
+
     fprintf(fpasm, "\tor eax, ebx\n");
     fprintf(fpasm, "\tpush dword eax\n");
 }
@@ -324,14 +324,14 @@ void y(FILE * fpasm, int es_referencia_1, int es_referencia_2) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     if (es_referencia_2)
         fprintf(fpasm, "\tmov ebx, [ebx]\n");
-     
+
     fprintf(fpasm, "\tand eax, ebx\n");
     fprintf(fpasm, "\tpush dword eax\n");
 
 }
 
 void es_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
-    
+
     fprintf(fpasm, "\tpop dword edx\n");
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_referencia_1)
@@ -347,12 +347,12 @@ void es_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiquet
     fprintf(fpasm, "no_igual_%d:\n", etiqueta);
     fprintf(fpasm, "\tpush dword 0\n");
     fprintf(fpasm, "fin_igual_%d:\n", etiqueta);
-    
+
 }
 
 
 void es_distinto(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
-    
+
     fprintf(fpasm, "\tpop dword edx\n");
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_referencia_1)
@@ -371,7 +371,7 @@ void es_distinto(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiq
 
 }
 
-void es_menor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){	    
+void es_menor_o_igual(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiqueta){
     fprintf(fpasm, "\tpop dword edx\n");
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_referencia_1)
@@ -444,25 +444,35 @@ void es_mayor(FILE* fpasm, int es_referencia_1, int es_referencia_2, int etiquet
     fprintf(fpasm, "fin_mayor_%d:\n", etiqueta);
 }
 
-void if_then_else(FILE* fpasm, int es_referencia, int etiqueta){    
+void if_then_else(FILE* fpasm, int es_referencia, int etiqueta){
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_referencia)
         fprintf(fpasm, "\tmov eax, dword [eax]\n");
     fprintf(fpasm, "\tcmp eax, 0\n");
     fprintf(fpasm, "\tje near fin_then_%d\n", etiqueta);
-    
+
 }
 
 void fin_then(FILE* fpasm, int etiqueta){
     fprintf(fpasm, "\tjmp near fin_ifelse_%d\n", etiqueta);
     fprintf(fpasm, "fin_then_%d:\n", etiqueta);
-    
+
 }
 
 void fin_if_else(FILE* fpasm, int etiqueta){
     fprintf(fpasm, "fin_ifelse_%d:\n", etiqueta);
 }
 
-
-
-
+void inicio_while(FILE* fpasm, int etiqueta){
+    fprintf(fpasm, "while_%d:\n", etiqueta);
+}
+void cpm_while(FILE* fpasm, int etiqueta){
+    fprintf(fpasm,"\tpop eax\n");
+    fprintf(fpasm,"\tmov eax , [eax]\n");
+    fprintf(fpasm,"\tcmp eax, 0\n");
+    fprintf(fpasm,"\tje near fin_while_%d\n",etiqueta);
+}
+void fin_while(FILE* fpasm, int etiqueta){
+    fprintf(fpasm,"\tjmp near while_%d\n",etiqueta);
+    fprintf(fpasm,"fin_while_%d:\n",etiqueta);
+}
