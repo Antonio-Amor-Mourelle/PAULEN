@@ -101,7 +101,7 @@ void no(FILE* fpasm, int es_referencia, int cuantos_no);
 /*
    Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEANO) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
-*/ 
+*/
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_referencia, int tipo);
 
@@ -120,6 +120,6 @@ void fin_then(FILE* fpasm, int etiqueta);
 void fin_if_else(FILE* fpasm, int etiqueta);
 
 void inicio_while(FILE* fpasm, int etiqueta);
-void cpm_while(FILE* fpasm, int etiqueta);
+void cmp_while(FILE* fpasm, int es_referencia,int etiqueta);
 void fin_while(FILE* fpasm, int etiqueta);
 #endif

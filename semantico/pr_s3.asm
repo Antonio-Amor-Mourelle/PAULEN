@@ -75,6 +75,41 @@ mayor_2:
 fin_mayor_2:
 	pop dword eax
 	mov [_y1], eax
+while_2:
+	push dword  _x1 
+	push dword  5 
+	pop dword edx
+	pop dword eax
+	mov eax, dword [eax]
+	cmp eax, edx
+	jl near menor_4
+	push dword 0
+	jmp near fin_menor_4
+menor_4:
+	push dword 1
+fin_menor_4:
+	pop eax
+	cmp eax, 0
+	je near fin_while_2
+	push dword  _x1 
+	push dword  1 
+	pop dword edx
+	pop dword eax
+	mov eax, dword [eax]
+	add eax, edx
+	push dword eax
+	pop dword eax
+	mov [_x1], eax
+	push dword  _x1 
+	push dword  _x1 
+	pop eax
+	mov eax, [eax]
+	push dword eax
+	call print_int
+	add esp, 4
+	call print_endofline
+	jmp near while_2
+fin_while_2:
 	push dword  _y1 
 	push dword  _y1 
 	pop eax

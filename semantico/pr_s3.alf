@@ -1,6 +1,6 @@
 main {
 
-        int x1, x2; 
+        int x1, x2;
         boolean y1, y2;
 
         scanf x1;
@@ -14,7 +14,12 @@ main {
 
         y1 = (x1 > x2);
 
+        while((x1<5)){
+            x1=x1+1;
+            printf x1;
+        }
+
+
         printf y1;
 
 }
-

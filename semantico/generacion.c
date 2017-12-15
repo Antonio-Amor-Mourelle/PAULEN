@@ -466,9 +466,10 @@ void fin_if_else(FILE* fpasm, int etiqueta){
 void inicio_while(FILE* fpasm, int etiqueta){
     fprintf(fpasm, "while_%d:\n", etiqueta);
 }
-void cpm_while(FILE* fpasm, int etiqueta){
+void cmp_while(FILE* fpasm, int es_referencia,int etiqueta){
     fprintf(fpasm,"\tpop eax\n");
-    fprintf(fpasm,"\tmov eax , [eax]\n");
+    if (es_referencia)
+        fprintf(fpasm,"\tmov eax , [eax]\n");
     fprintf(fpasm,"\tcmp eax, 0\n");
     fprintf(fpasm,"\tje near fin_while_%d\n",etiqueta);
 }

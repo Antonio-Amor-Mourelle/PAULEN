@@ -193,10 +193,10 @@ while : TOK_WHILE '(' {
 }
 
 while_exp : while exp ')' '{' {
-		if($2.tipo!=BOOLEAN){error_semantico = 1; yyerror("while sin expresion");}
+		if($2.tipo!=BOOLEAN){error_semantico = 1; yyerror("while sin expresion"); return -1;}
 		$$.etiqueta=$1.etiqueta;
 		/*Ensamblador*/
-		cpm_while(fpasm,$$.etiqueta);
+		cmp_while(fpasm,$2.es_direccion,$$.etiqueta);
 
 }
 
