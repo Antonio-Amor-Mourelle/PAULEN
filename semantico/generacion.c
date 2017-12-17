@@ -87,17 +87,32 @@ void escribir_fin(FILE* fpasm) {
 
 /**********************************************************************************/
 
-void escribir_operando(FILE * fpasm, char * nombre, int es_var) {
+void escribir_operando(FILE * fpasm, char * nombre, int es_var, int en_funcion) {
     /* SE INTRODUCE EL OPERANDO nombre EN LA PILA
             SI ES UNA VARIABLE (es_var == 1) HAY QUE PRECEDER EL NOMBRE DE _
             EN OTRO CASO, SE ESCRIBE TAL CUAL
 
      */
     if (es_var) {
-        fprintf(fpasm, "\tpush dword  _%s \n", nombre);
+        if(en_funcion)
+            fprintf(fpasm, "\tpush dword  [_%s] \n", nombre);
+        else 
+            fprintf(fpasm, "\tpush dword  _%s \n", nombre);
     } else {
         fprintf(fpasm, "\tpush dword  %s \n", nombre);
     }
+}
+
+void escribir_parametro(FILE * fpasm, int num_parametros, int pos_param){
+	fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
+	fprintf(fpasm, "\tpush dword [eax]\n");
+    fprintf(stdout, "---------------------\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
+	fprintf(stdout, "---------------------\tpush dword [eax]\n");
+}
+
+void escribir_variable_local(FILE * fpasm, int pos_variable){
+	fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4*pos_variable);
+	fprintf(fpasm, "\tpush dword [eax]\n");
 }
 
 void asignar(FILE * fpasm, char * nombre, int es_referencia) {
@@ -112,6 +127,24 @@ void asignar(FILE * fpasm, char * nombre, int es_referencia) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     fprintf(fpasm, "\tmov [_%s], eax\n", nombre);
 
+}
+
+void asignar_parametro(FILE * fpasm, int num_parametros, int pos_param, int es_referencia){
+    fprintf(fpasm, "\tpop dword ebx\n");
+    if (es_referencia)
+        fprintf(fpasm, "\tmov ebx, [ebx]\n");
+
+    fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
+    fprintf(fpasm, "\tmov [eax], ebx\n"); 	
+}
+
+void asignar_variable_local(FILE * fpasm, int pos_variable, int es_referencia){
+    fprintf(fpasm, "\tpop dword ebx\n");
+    if (es_referencia)
+        fprintf(fpasm, "\tmov ebx, [ebx]\n");
+
+    fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4*pos_variable);
+    fprintf(fpasm, "\tmov [eax], ebx\n");
 }
 
 void sumar(FILE * fpasm, int es_referencia_1, int es_referencia_2) {
@@ -200,6 +233,31 @@ void leer(FILE * fpasm, char * nombre, int tipo) {
     fprintf(fpasm, "\tadd esp, 4\n");
 
 
+}
+
+
+void leer_parametro(FILE * fpasm, int num_parametros, int pos_param, int tipo){
+    fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
+    fprintf(fpasm, "\tpush dword eax\n");
+
+    if (tipo == INT)
+        fprintf(fpasm, "\tcall scan_int\n");
+    else
+        fprintf(fpasm, "\tcall scan_boolean\n");
+
+    fprintf(fpasm, "\tadd esp, 4\n");
+    
+}
+void leer_variable_local(FILE * fpasm, int pos_variable, int tipo){
+    fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4*pos_variable);
+    fprintf(fpasm, "\tpush dword eax\n");
+
+    if (tipo == INT)
+        fprintf(fpasm, "\tcall scan_int\n");
+    else
+        fprintf(fpasm, "\tcall scan_boolean\n");
+
+    fprintf(fpasm, "\tadd esp, 4\n");
 }
 
 void escribir(FILE * fpasm, int es_referencia, int tipo) {
@@ -483,7 +541,7 @@ void inicio_declarar_funcion(FILE* fpasm, char* nombre, int num_variables_locale
     fprintf(fpasm,"_%s:\n",nombre);
     fprintf(fpasm,"\tpush ebp\n");
     fprintf(fpasm,"\tmov ebp, esp\n");
-    fprintf(fpasm,"\tmov esp, 4*%d\n", num_variables_locales);
+    fprintf(fpasm,"\tsub esp, 4*%d\n", num_variables_locales);
 }
 void fin_declarar_funcion(FILE* fpasm, int es_direccion){
     fprintf(fpasm,"\tpop dword eax\n");
@@ -494,3 +552,11 @@ void fin_declarar_funcion(FILE* fpasm, int es_direccion){
     fprintf(fpasm,"\tpop ebp\n");
     fprintf(fpasm,"\tret\n");
 }
+
+void llamada_funcion(FILE * fpasm, char* lexema, int num_params){
+
+    fprintf(fpasm, "\tcall _%s\n", lexema);
+    fprintf(fpasm, "\tadd esp, 4*%d\n", num_params);
+    fprintf(fpasm, "\tpush dword eax\n");
+}
+

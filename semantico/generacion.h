@@ -54,7 +54,9 @@ En el final del programa se debe:
          ·Salir del programa (ret).
 */
 
-void escribir_operando(FILE* fpasm, char* nombre, int es_var);
+void escribir_operando(FILE* fpasm, char* nombre, int es_var, int en_funcion);
+void escribir_parametro(FILE * fpasm, int num_parametros, int pos_param);
+void escribir_variable_local(FILE * fpasm, int pos_variable);
 /*
    Función que debe ser invocada cuando se sabe un operando de una operación aritmético-lógica y se necesita introducirlo en la pila.
 nombre es la cadena de caracteres del operando tal y como debería aparecer en el fuente NASM
@@ -62,6 +64,9 @@ es_var indica si este operando es una variable (como por ejemplo b1) con un 1 u 
 */
 
 void asignar(FILE* fpasm, char* nombre, int es_referencia);
+void asignar_parametro(FILE * fpasm, int num_parametros, int pos_param, int es_referencia);
+void asignar_variable_local(FILE * fpasm, int pos_variable, int es_referencia);
+
 /*
 Genera el código para asignar valor a la variable de nombre nombre.
 Se toma el valor de la cima de la pila.
@@ -103,6 +108,9 @@ void no(FILE* fpasm, int es_referencia, int cuantos_no);
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
 void leer(FILE* fpasm, char* nombre, int tipo);
+void leer_parametro(FILE * fpasm, int num_parametros, int pos_param, int tipo);
+void leer_variable_local(FILE * fpasm, int pos_variable, int tipo);
+
 void escribir(FILE* fpasm, int es_referencia, int tipo);
 
 /*FUNCIONES ADICIONALES PARA LAS COMPARACIONES*/
@@ -125,4 +133,6 @@ void fin_while(FILE* fpasm, int etiqueta);
 
 void inicio_declarar_funcion(FILE* fpasm, char* nombre, int num_variables_locales);
 void fin_declarar_funcion(FILE* fpasm, int es_direccion);
+
+void llamada_funcion(FILE * fpasm, char* lexema, int num_params);
 #endif

@@ -1,0 +1,104 @@
+;D:	main
+;D:	{
+;D:	int
+;R10:	<tipo> ::= int
+;R9:	<clase_escalar> ::= <tipo>
+;R5:	<clase> ::= <clase_escalar>
+;D:	x
+;R108:	<identificador> ::= TOK_IDENTIFICADOR
+;D:	,
+;D:	y
+;R108:	<identificador> ::= TOK_IDENTIFICADOR
+;D:	;
+;R18:	<identificadores> ::= <identificador>
+;R19:	<identificadores> ::= <identificador> , <identificadores>
+;R4:	<declaracion> ::= <clase> <identificadores> ;
+;D:	function
+;R2:	<declaraciones> ::= <declaracion>
+;D:	int
+;R10:	<tipo> ::= int
+;D:	hola
+;D:	(
+;D:	int
+;R10:	<tipo> ::= int
+;D:	n
+;R27:	<parametro_funcion> ::= <tipo> <identificador>
+;D:	;
+;D:	int
+;R10:	<tipo> ::= int
+;D:	m
+;R27:	<parametro_funcion> ::= <tipo> <identificador>
+;D:	)
+;R26:	<resto_parametros_funcion> ::= 
+;R25:	<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>
+;R23:	<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>
+;D:	{
+;D:	printf
+;R29:	<declaraciones_funcion> ::= 
+;D:	(
+;D:	(
+;D:	n
+;D:	==
+;R80:	<exp> ::= <identificador>
+;D:	m
+;D:	)
+;R80:	<exp> ::= <identificador>
+;R93:	<comparacion> ::= <exp> == <exp>
+;R83:	<exp> ::= ( <comparacion> )
+;D:	)
+;R82:	<exp> ::= ( <exp> )
+;D:	;
+;R56:	<escritura> ::= printf <exp>
+;R36:	<sentencia_simple> ::= <escritura>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	return
+;D:	n
+;D:	*
+;R80:	<exp> ::= <identificador>
+;D:	m
+;D:	;
+;R80:	<exp> ::= <identificador>
+;R75:	<exp> ::= <exp> * <exp>
+;R61:	<retorno_funcion> ::= return <exp>
+;R38:	<sentencia_simple> ::= <retorno_funcion>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	}
+;R30:	<sentencias> ::= <sentencia>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R22:	<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }
+;D:	scanf
+;R21:	<funciones> ::= 
+;R20:	<funciones> ::= <funcion> <funciones>
+;D:	x
+;R54:	<lectura> ::= scanf <identificador>
+;R35:	<sentencia_simple> ::= <lectura>
+;D:	;
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	scanf
+;D:	y
+;R54:	<lectura> ::= scanf <identificador>
+;R35:	<sentencia_simple> ::= <lectura>
+;D:	;
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	printf
+;D:	hola
+;D:	(
+;D:	x
+;D:	,
+;R80:	<exp> ::= <identificador>
+;D:	y
+;D:	)
+;R80:	<exp> ::= <identificador>
+;R92:	<resto_lista_expresiones> ::= 
+;R91:	<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones> 
+;R89:	<lista_expresiones> ::= <exp> <resto_lista_expresiones>
+;R88:	<exp> ::= <identificador> ( <lista_expresiones> )
+;D:	;
+;R56:	<escritura> ::= printf <exp>
+;R36:	<sentencia_simple> ::= <escritura>
+;R32:	<sentencia> ::= <sentencia_simple> ;
+;D:	}
+;R30:	<sentencias> ::= <sentencia>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R31:	<sentencias> ::= <sentencia> <sentencias>
+;R1:	<programa> ::= main { <declaraciones> <funciones> <sentencias> }
