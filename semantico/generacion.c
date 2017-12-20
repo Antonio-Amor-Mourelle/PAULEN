@@ -14,7 +14,8 @@ void escribir_subseccion_data(FILE* fpasm) {
             VARIABLES AUXILIARES NECESARIAS EN EL COMPILADOR QUE DEBAN TENER UN VALOR CONCRETO */
     /* Variables auxiliares para mensajes de errores en tiempo de ejecución */
     fprintf(fpasm, "segment .data\n");
-    fprintf(fpasm, "msg_error_division db \"ERROR: DIVISON BY ZERO\", 0\n");
+    fprintf(fpasm, "msg_error_division db \"****Error de ejecucion: Division por cero.\", 0\n");
+    fprintf(fpasm, "msg_error_vector db \"****Error de ejecucion: Indice fuera de rango.\", 0\n");
 }
 
 /**********************************************************************************/
@@ -74,6 +75,8 @@ void escribir_fin(FILE* fpasm) {
             RESTAURACION DEL PUNTERO DE PILA A PARTIR DE LA VARIABLE __esp
             SENTENCIA DE RETORNO DEL PROGRAMA
      */
+    
+    fprintf(fpasm, "fin:");  
     fprintf(fpasm, "\tmov dword esp, [__esp]\n");
     fprintf(fpasm, "\tret\n");
     fprintf(fpasm, "gestion_error_div_cero:\n");
@@ -81,8 +84,12 @@ void escribir_fin(FILE* fpasm) {
     fprintf(fpasm, "\tcall print_string\n");
     fprintf(fpasm, "\tadd esp, 4\n");
     fprintf(fpasm, "\tcall print_endofline\n");
-    fprintf(fpasm, "\tmov dword esp, [__esp]\n");/*ERROR CORREGIDO*/
-    fprintf(fpasm, "\tret");
+    fprintf(fpasm, "\tjmp near fin\n");
+    fprintf(fpasm, "gestion_indice_fuera_rango:\n");
+    fprintf(fpasm, "\tpush dword msg_error_vector\n");
+    fprintf(fpasm, "\tcall print_string\n");
+    fprintf(fpasm, "\tadd esp, 4\n");
+    fprintf(fpasm, "\tjmp near fin\n");
 }
 
 /**********************************************************************************/
@@ -115,6 +122,30 @@ void escribir_variable_local(FILE * fpasm, int pos_variable){
 	fprintf(fpasm, "\tpush dword [eax]\n");
 }
 
+void escribir_elemento_vector(FILE *fpasm, char* nombre, int es_direccion, int tamano_vector, int en_funcion){
+	/*Sacar la expresion de la pila*/	
+	fprintf(fpasm, "\tpop dword eax\n");
+	if(es_direccion)
+		fprintf(fpasm, "\tmov dword eax , [eax]\n");
+	/*Comprobamos que el indice no sea menor de 0*/
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tjl near gestion_indice_fuera_rango\n");
+	/*Comprobamos que el indice no sea mayor del total del vector*/
+	fprintf(fpasm, "\tcmp eax, %d\n", tamano_vector);
+	fprintf(fpasm, "\tjge near gestion_indice_fuera_rango\n");
+
+    /*Conseguimos la direccion de inicio del vector*/
+    fprintf(fpasm, "\tmov dword edx, _%s\n", nombre);
+    /*Accedemos a la posicion marcada por eax*/
+    fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
+    /*Guardamos el elemento en la pila*/
+    if(en_funcion)
+        fprintf(fpasm, "\tpush dword [eax]\n");
+    else 
+        fprintf(fpasm, "\tpush dword eax\n");
+
+}
+
 void asignar(FILE * fpasm, char * nombre, int es_referencia) {
     /* ESCRIBE EL CÓDIGO PARA REALIZAR UNA ASIGNACIÓN DE LO QUE ESTÉ EN LA CIMA DE LA PILA A LA VARIABLE nombre
             SE RECUPERA DE LA PILA LO QUE HAYA POR EJEMPLO EN EL REGISTRO eax
@@ -127,6 +158,15 @@ void asignar(FILE * fpasm, char * nombre, int es_referencia) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     fprintf(fpasm, "\tmov [_%s], eax\n", nombre);
 
+}
+
+void asignar_vector(FILE* fpasm, int es_referencia){
+	fprintf(fpasm, "\tpop dword eax\n");
+	if(es_referencia)
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+
+	fprintf(fpasm, "\tpop dword edx\n");
+	fprintf(fpasm, "\tmov dword [edx] , eax\n");
 }
 
 void asignar_parametro(FILE * fpasm, int num_parametros, int pos_param, int es_referencia){

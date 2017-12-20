@@ -57,6 +57,7 @@ En el final del programa se debe:
 void escribir_operando(FILE* fpasm, char* nombre, int es_var, int en_funcion);
 void escribir_parametro(FILE * fpasm, int num_parametros, int pos_param);
 void escribir_variable_local(FILE * fpasm, int pos_variable);
+void escribir_elemento_vector(FILE *fpasm, char* nombre, int es_var, int tamano_vector, int en_funcion);
 /*
    Función que debe ser invocada cuando se sabe un operando de una operación aritmético-lógica y se necesita introducirlo en la pila.
 nombre es la cadena de caracteres del operando tal y como debería aparecer en el fuente NASM
@@ -64,6 +65,7 @@ es_var indica si este operando es una variable (como por ejemplo b1) con un 1 u 
 */
 
 void asignar(FILE* fpasm, char* nombre, int es_referencia);
+void asignar_vector(FILE* fpasm, int es_referencia);
 void asignar_parametro(FILE * fpasm, int num_parametros, int pos_param, int es_referencia);
 void asignar_variable_local(FILE * fpasm, int pos_variable, int es_referencia);
 

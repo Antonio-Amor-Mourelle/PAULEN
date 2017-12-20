@@ -1,0 +1,23 @@
+main {
+
+    int x;
+
+    function int fibonacci(int n){
+        boolean x;
+
+        if((n == 0) || (n==1)){
+
+            return x; 
+        } else {
+
+            return fibonacci(n-2)+fibonacci(n-1);
+        }
+            
+
+    }
+
+    scanf x;
+    
+    printf fibonacci(x);
+
+}

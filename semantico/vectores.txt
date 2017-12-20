@@ -1,0 +1,14 @@
+1-Declaracion:
+	Escribir mensaje (Out of bounds)
+	Vectores
+2-Indexar: control del error en tiempo de ejecucion
+	Expresion
+	Asignaciones
+
+
+Declarar el mensaje "Indice fuera de rango" en el segmento data
+Transparencia 42 el ultimo salto no es jl sino jg
+Asignacion: 2 opciones
+		lea
+		imul: errata no se puede usar edx para multiplicar
+

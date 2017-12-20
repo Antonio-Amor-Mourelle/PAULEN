@@ -1,0 +1,20 @@
+main{
+    int n;
+
+    function int factorial(){
+        int fact;
+
+        fact = n;
+        while((n > 1)){
+            n = n-1;
+            fact = fact * n;
+        }
+        return fact;
+    }
+
+    scanf n;
+    
+    printf factorial();
+
+    printf n;
+}

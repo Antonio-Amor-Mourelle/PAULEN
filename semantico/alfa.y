@@ -26,11 +26,14 @@ int pos_variable_local_actual=1; /*Posicion de una variable local en su declarac
 int num_variables_locales_actual=0; /*numero de variables locales de una funcion*/ 
 int num_parametros_actual=0;/*numero de parametros de una funcion*/
 int pos_parametro_actual=0; /*posicion del parametro actual*/
+int tipo_funcion_actual; /*Tipo de la funcion para la comprobacion de tipo de retorno*/
 
 int num_return;
 
 int en_explist = 0; /*Controla si una variable se pasa como parametro a una funcion, ya
 		que el convenio de llamadas exige pasar los argumentos por valor*/
+int num_parametros_llamada_actual = 0; /*Para saber si los parametros de una funcion son los
+		mismos declarados en la tabla de simbolos*/
 
 
 int ambito_local=0;/* FLAG del ambito local, 1 si estamos en el ambito local*/
@@ -142,14 +145,15 @@ clase_escalar : tipo {tamanio_vector_actual=0; fprintf(out, ";R9:\t<clase_escala
 tipo : TOK_INT {tipo_actual = INT; fprintf(out, ";R10:\t<tipo> ::= int\n");}
        | TOK_BOOLEAN {tipo_actual = BOOLEAN; fprintf(out, ";R11:\t<tipo> ::= boolean\n");}
 clase_vector : TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' {
-	if ((tamanio_vector_actual < 1 ) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)){
+	if (($4.valor_entero < 1 ) || ($4.valor_entero > MAX_TAMANIO_VECTOR)){
 		error_semantico=1;
 		/*TODO CAMBIAR COMPROBACION DE SITIO*/
-		/*asprintf(&cadaux,"El tamanyo del vector %s excede los limites permitidos(1,%d)",$1.lexema, MAX_TAMANIO_VECTOR)
+		asprintf(&cadaux,"El tamanyo del vector excede los limites permitidos(1,%d)", MAX_TAMANIO_VECTOR);
 		yyerror(cadaux);
-		free(cadaux);*/
+		free(cadaux);
 		return -1;
 	 } else {
+		/*Propagacion de atributos semanticos*/
 		tamanio_vector_actual = $4.valor_entero;
 		fprintf(out, ";R15:<clase_vector> ::= array <tipo> [ <constante_entera> ]\t\n");
 	}
@@ -175,6 +179,7 @@ fn_name : TOK_FUNCTION tipo TOK_IDENTIFICADOR {
 	}
 	/*nos situamos en el ambito local*/
 	ambito_local=1;
+	tipo_funcion_actual = tipo_actual;
 	
 }
 fn_declaration : fn_name '(' parametros_funcion ')' '{' declaraciones_funcion {
@@ -183,17 +188,20 @@ fn_declaration : fn_name '(' parametros_funcion ')' '{' declaraciones_funcion {
 	/*actualizamos en la tabla local*/
 	simbolo = uso_local($$.lexema);
 	simbolo->num_params=num_parametros_actual;
-	simbolo->num_variables=num_variables_locales_actual;
 	/*actualizamos en la tabla global*/
 	simbolo = uso_global($$.lexema);
 	simbolo->num_params=num_parametros_actual;
-	simbolo->num_variables=num_variables_locales_actual;
 	
 	/*codigo ensamblador*/
 	inicio_declarar_funcion(fpasm, $$.lexema, num_variables_locales_actual);
 }
 funcion : fn_declaration sentencias '}' {
 	/*cerramos la tabla de simbolos local*/
+	INFO_SIMBOLO *simbolo;
+	simbolo = uso_local($1.lexema);
+	simbolo->num_variables=num_variables_locales_actual;
+	simbolo = uso_global($1.lexema);
+	simbolo->num_variables=num_variables_locales_actual;
 	ambito_local=0;
 	fin_funcion();
 	/*comprobar numero de retornos > 0*/
@@ -255,8 +263,43 @@ asignacion : TOK_IDENTIFICADOR '=' exp {
 			asignar(fpasm, $1.lexema, $3.es_direccion);
 	
 		fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
-             | elemento_vector '=' exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
-elemento_vector : identificador '[' exp ']'  {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
+             | elemento_vector '=' exp {
+	/*Comprobaciones semanticas*/
+	if($1.tipo != $3.tipo){
+		error_semantico = 1;
+		yyerror("Asignacion incompatible.");
+		return -1;		
+	}
+	/*TODO asignar en ensamblador*/
+	asignar_vector(fpasm, $3.es_direccion);
+
+	fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");
+}
+elemento_vector : TOK_IDENTIFICADOR '[' exp ']'  {
+	/*TODO*/
+	/*Buscamos el identificador en la tabla de simbolos. Solo se busca en la global porque no 
+	se permite declarar vectores dentro de una funcion*/
+	INFO_SIMBOLO *simbolo;	
+	simbolo = uso_global($1.lexema);
+	if(!simbolo) {
+		error_semantico = 1;
+		asprintf(&cadaux, "Acceso a variable no declarada (%s).",$1.lexema);
+		yyerror(cadaux);
+		free(cadaux);
+		return -1;
+	}
+	if($3.tipo != INT){
+		error_semantico = 1;
+		yyerror("El indice en una operacion de indexacion tiene que ser de tipo entero.");
+		return -1;
+	}
+	$$.tipo = simbolo->tipo;
+	$$.es_direccion = 1;
+	/*TODO generar el codigo ensamblador que comprueba que se accede al vector en el limite permitido*/
+	/*Metemos el elemento vector en la pila*/
+	escribir_elemento_vector(fpasm, $1.lexema, $3.es_direccion, simbolo->tamano, en_explist);
+	fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");
+}
 condicional : if_exp_sentencias {fin_if_else(fpasm, $1.etiqueta); fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
               | if_exp_sentencias TOK_ELSE '{' sentencias '}' {
 	
@@ -324,8 +367,10 @@ lectura : TOK_SCANF TOK_IDENTIFICADOR {
 }
 escritura : TOK_PRINTF exp {
 	/*PREGUNTAR si esto es necesario*/
+/*
 	if($2.es_direccion)
 		escribir_operando(fpasm, $2.lexema, 1, 0);
+*/
 	/**/
 	escribir(fpasm, $2.es_direccion, $2.tipo);
 
@@ -335,6 +380,11 @@ retorno_funcion : TOK_RETURN exp {
 		if(!ambito_local){
 			error_semantico=1;
 			yyerror("Sentencia de retorno fuera del cuerpo de una funcion.");
+			return -1;
+		}
+		if(tipo_funcion_actual != $2.tipo){
+			error_semantico=1;
+			yyerror("Asignacion incompatible.");
 			return -1;
 		}
 		num_return++;
@@ -495,7 +545,7 @@ exp : exp '+' exp {
 		yyerror("Asignacion incompatible");
 		return -1;
 	}
-	if(simbolo->num_params != num_parametros_actual){
+	if(simbolo->num_params != num_parametros_llamada_actual){
 		error_semantico = 1;
 		yyerror("Numero incorrecto de parametros en llamada a funcion.");
 		return -1;		
@@ -511,12 +561,12 @@ exp : exp '+' exp {
 }
 idf_llamada : TOK_IDENTIFICADOR {
 	en_explist = 1;
-	num_parametros_actual = 0;
+	num_parametros_llamada_actual = 0;
 	strcpy($$.lexema, $1.lexema); 
 }
-lista_expresiones : exp resto_lista_expresiones {num_parametros_actual++; fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
+lista_expresiones : exp resto_lista_expresiones {num_parametros_llamada_actual++; fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
                     | /**/ {fprintf(out, ";R90:\t<lista_expresiones> ::= \n");}
-resto_lista_expresiones : ',' exp resto_lista_expresiones {num_parametros_actual++; fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones> \n");}
+resto_lista_expresiones : ',' exp resto_lista_expresiones {num_parametros_llamada_actual++; fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones> \n");}
                           | /**/ {fprintf(out, ";R92:\t<resto_lista_expresiones> ::= \n");}
 comparacion : exp TOK_IGUAL exp {
 		if($1.tipo==BOOLEAN || $1.tipo != $3.tipo){error_semantico = 1; yyerror("Comparacion con operandos boolean.");return -1;}
