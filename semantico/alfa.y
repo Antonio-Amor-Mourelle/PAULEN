@@ -293,6 +293,11 @@ elemento_vector : TOK_IDENTIFICADOR '[' exp ']'  {
 		yyerror("El indice en una operacion de indexacion tiene que ser de tipo entero.");
 		return -1;
 	}
+	if(simbolo->clase != VECTOR){
+		error_semantico = 1;
+		yyerror("Intento de indexacion de una variable que no es de tipo vector.");
+		return -1;
+	}
 	$$.tipo = simbolo->tipo;
 	$$.es_direccion = 1;
 	/*TODO generar el codigo ensamblador que comprueba que se accede al vector en el limite permitido*/
@@ -489,7 +494,6 @@ exp : exp '+' exp {
 		/*Comprobamos si el simbolo es un parametro*/
 		if(simbolo->categoria == PARAMETRO){
 			escribir_parametro(fpasm, num_parametros_actual, simbolo->pos_param);
-			printf("-----PARAMETRO: %s, NUM PARAM: %d, POS: %d\n", $1.lexema, num_parametros_actual, simbolo->pos_param);
 			$$.es_direccion = 0;
 		} else if (simbolo->pos_variable) {	
 			escribir_variable_local(fpasm, simbolo->pos_variable);

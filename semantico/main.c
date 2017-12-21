@@ -12,7 +12,7 @@ FILE *fpasm;
 TablaSimbolos *tabla;
 
 int main(int argc, char **argv){
-	out = stdout;
+	out = fopen("reglas_sintactico.txt", "w");
 	
 	tabla = crear_tabla_simbolos();
 	fpasm = fopen("programa_ensamblador.asm", "w");
@@ -38,6 +38,7 @@ int main(int argc, char **argv){
 	yyparse();
 	fclose(yyin);
 	fclose(fpasm);
+	fclose(out);
 
 	return 0;
 		

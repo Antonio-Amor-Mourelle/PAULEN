@@ -113,8 +113,6 @@ void escribir_operando(FILE * fpasm, char * nombre, int es_var, int en_funcion) 
 void escribir_parametro(FILE * fpasm, int num_parametros, int pos_param){
 	fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
 	fprintf(fpasm, "\tpush dword [eax]\n");
-    fprintf(stdout, "---------------------\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
-	fprintf(stdout, "---------------------\tpush dword [eax]\n");
 }
 
 void escribir_variable_local(FILE * fpasm, int pos_variable){
