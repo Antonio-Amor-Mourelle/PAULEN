@@ -103,7 +103,8 @@ void yyerror(char *s){
 
 
 
-%left TOK_AND TOK_OR
+%left TOK_OR
+%left TOK_AND 
 %right '!'
 %left '<' '>' TOK_MENORIGUAL TOK_MAYORIGUAL
 %left '+' '-'

@@ -26,17 +26,17 @@ main:
 	add esp, 4
 	push dword  _a 
 	push dword  _b 
+	push dword  _c 
 	pop ebx
 	pop eax
 	mov eax, [eax]
 	mov ebx, [ebx]
-	or eax, ebx
+	and eax, ebx
 	push dword eax
-	push dword  _c 
 	pop ebx
 	pop eax
-	mov ebx, [ebx]
-	and eax, ebx
+	mov eax, [eax]
+	or eax, ebx
 	push dword eax
 	pop eax
 	push dword eax
