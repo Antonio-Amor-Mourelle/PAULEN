@@ -557,13 +557,18 @@ exp : exp '+' exp {
 
 	$$.tipo = simbolo->tipo;
 	$$.es_direccion = 0;
-
+	en_explist =0;
 	/*Codigo ensamblador*/
 	llamada_funcion(fpasm, $1.lexema, simbolo->num_params);
 	
 	fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");
 }
 idf_llamada : TOK_IDENTIFICADOR {
+	if(en_explist){
+		error_semantico = 1;
+		yyerror("No esta permitido el uso de llamadas a funciones como parametros de otras funciones.");
+		return -1;			
+	}
 	en_explist = 1;
 	num_parametros_llamada_actual = 0;
 	strcpy($$.lexema, $1.lexema); 

@@ -24,14 +24,14 @@ int main(int argc, char **argv){
 	
 	yyin=fopen(argv[1], "r");
 	if (!yyin){
-		printf("No se encontro el fichero\n");
+		printf("No se encontro el fichero: %s\n", argv[1]);
 		return -1; 
 	}
     /*Cuidado, no llamar a la salida yyout*/
 	fpasm=fopen(argv[2], "w");
 
 	if (!fpasm){
-		printf("No se encontro el fichero\n");
+		printf("No se encontro el fichero: %s\n", argv[2]);
 		fclose(yyin);
 		return -1;
 	}

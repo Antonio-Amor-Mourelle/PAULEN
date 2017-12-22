@@ -50,7 +50,7 @@ printf {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; return TOK_PRINTF;}
 "<" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
 ">" {fprintf(out, ";D:\t%s\n", yytext); columna++; return yytext[0];}
 "//".*\n {fila++; columna=1;}
-\n {fila++; columna=1;}
+\r?\n {fila++; columna=1;}
 [ \t] {columna++;}
 ([0-9])+ {fprintf(out, ";D:\t%s\n", yytext); columna+=yyleng; yylval.atributos.valor_entero=atoi(yytext); return TOK_CONSTANTE_ENTERA;}
 [A-Za-z]([A-Za-z0-9])* {if(yyleng > 100){

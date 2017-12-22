@@ -53,9 +53,3 @@ main:
 	push dword _y
 	call scan_int
 	add esp, 4
-	push dword  8 
-	push dword  4 
-	call _resta
-	add esp, 4*2
-	push dword eax
-	push dword  [_y] 
