@@ -75,8 +75,8 @@ void escribir_fin(FILE* fpasm) {
             RESTAURACION DEL PUNTERO DE PILA A PARTIR DE LA VARIABLE __esp
             SENTENCIA DE RETORNO DEL PROGRAMA
      */
-    
-    fprintf(fpasm, "fin:");  
+
+    fprintf(fpasm, "fin:");
     fprintf(fpasm, "\tmov dword esp, [__esp]\n");
     fprintf(fpasm, "\tret\n");
     fprintf(fpasm, "gestion_error_div_cero:\n");
@@ -89,6 +89,7 @@ void escribir_fin(FILE* fpasm) {
     fprintf(fpasm, "\tpush dword msg_error_vector\n");
     fprintf(fpasm, "\tcall print_string\n");
     fprintf(fpasm, "\tadd esp, 4\n");
+    fprintf(fpasm, "\tcall print_endofline\n");
     fprintf(fpasm, "\tjmp near fin\n");
 }
 
@@ -103,7 +104,7 @@ void escribir_operando(FILE * fpasm, char * nombre, int es_var, int en_funcion) 
     if (es_var) {
         if(en_funcion)
             fprintf(fpasm, "\tpush dword  [_%s] \n", nombre);
-        else 
+        else
             fprintf(fpasm, "\tpush dword  _%s \n", nombre);
     } else {
         fprintf(fpasm, "\tpush dword  %s \n", nombre);
@@ -121,7 +122,7 @@ void escribir_variable_local(FILE * fpasm, int pos_variable){
 }
 
 void escribir_elemento_vector(FILE *fpasm, char* nombre, int es_direccion, int tamano_vector, int en_funcion){
-	/*Sacar la expresion de la pila*/	
+	/*Sacar la expresion de la pila*/
 	fprintf(fpasm, "\tpop dword eax\n");
 	if(es_direccion)
 		fprintf(fpasm, "\tmov dword eax , [eax]\n");
@@ -139,7 +140,7 @@ void escribir_elemento_vector(FILE *fpasm, char* nombre, int es_direccion, int t
     /*Guardamos el elemento en la pila*/
     if(en_funcion)
         fprintf(fpasm, "\tpush dword [eax]\n");
-    else 
+    else
         fprintf(fpasm, "\tpush dword eax\n");
 
 }
@@ -173,7 +174,7 @@ void asignar_parametro(FILE * fpasm, int num_parametros, int pos_param, int es_r
         fprintf(fpasm, "\tmov ebx, [ebx]\n");
 
     fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4+4*(num_parametros-pos_param));
-    fprintf(fpasm, "\tmov [eax], ebx\n"); 	
+    fprintf(fpasm, "\tmov [eax], ebx\n");
 }
 
 void asignar_variable_local(FILE * fpasm, int pos_variable, int es_referencia){
@@ -284,7 +285,7 @@ void leer_parametro(FILE * fpasm, int num_parametros, int pos_param, int tipo){
         fprintf(fpasm, "\tcall scan_boolean\n");
 
     fprintf(fpasm, "\tadd esp, 4\n");
-    
+
 }
 void leer_variable_local(FILE * fpasm, int pos_variable, int tipo){
     fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4*pos_variable);
@@ -597,4 +598,3 @@ void llamada_funcion(FILE * fpasm, char* lexema, int num_params){
     fprintf(fpasm, "\tadd esp, 4*%d\n", num_params);
     fprintf(fpasm, "\tpush dword eax\n");
 }
-
